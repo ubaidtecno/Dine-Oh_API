@@ -1,0 +1,399 @@
+openapi: 3.0.1
+info:
+  title: Dine-Oh
+  description: Dine-Oh
+  contact:
+    name: Dine-Oh
+    url: https://www.tecnovators.com
+    email: info@tecnovators.com
+  license:
+    name: Dine-Oh
+    url: https://www.tecnovators.com/
+  version: v1
+servers:
+  - url: https://dine-oh-api.tecnovaters.com/api/v1
+    description: Development Server
+  - url: http://localhost:3700/api/v1
+    description: Local Host
+
+paths:
+  /signup:
+   post:
+      tags:
+        - Users
+      summary: Creates a new user
+      description: Creates a new user
+      requestBody:
+        description: The users JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+        required: true
+      responses:
+        "200":
+          description: New user added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /login:
+    post:
+      tags:
+        - Users
+      summary: Field Agent login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      x-codegen-request-body-name: body
+
+        /forgot_password:
+    post:
+      tags:
+        - Users
+      summary: Forgot password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /verify_otp:
+    post:
+      summary: Verify Otp
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                otp:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /reset_password:
+    post:
+      summary: Reset Password
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: number
+                password:
+                  type: string
+                confirm_password:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /change_password:
+    post:
+      summary: Change Password
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                current_password:
+                  type: string
+                password:
+                  type: string
+                confirm_password:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
+  /me-user:
+    get:
+      tags:
+        - Users
+      summary: Get current user
+      description: Returns current user
+      responses:
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get all user
+      description: Returns all user
+      parameters:
+        - name: filter
+          in: query
+          description: Filter users
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and first_name
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and first_name
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Get single user
+      description: Returns particular user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - Users
+      summary: Update user by its id
+      description: Update user by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of user to update
+          required: true
+          schema:
+            type: string
+            format: string
+      requestBody:
+        description: The user JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+        required: true
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      x-codegen-request-body-name: body
+      security:
+        - http: []
+    delete:
+      tags:
+        - Users
+      summary: Delete user
+      description: Deletes a single user based on the ID supplied
+      parameters:
+        - name: id
+          in: path
+          description: ID of user to delete
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        "200":
+          description: User deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
+# Components
+components:
+  schemas:
+    Users:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        mobile_code:
+          type: string
+        mobile:
+          type: string
+        password:
+          type: string
+    Error:
+      type: object
+      properties:
+        statusCode:
+          type: number
+        data:
+          type: string
+        message:
+          type: string
+        success:
+          type: boolean
+          default: false
+    Success:
+      type: object
+      properties:
+        statusCode:
+          type: number
+        data:
+          type: string
+        message:
+          type: string
+        success:
+          type: boolean
+          default: true
+
+  securitySchemes:
+    http:
+      type: apiKey
+      name: Authorization
+      in: header
+x-original-swagger-version: "2.0"
