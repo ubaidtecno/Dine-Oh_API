@@ -366,6 +366,64 @@ components:
           type: string
         password:
           type: string
+    Restaurants:
+      type: object
+      properties:
+        name:
+          type: string
+          format: string
+        description:
+          type: string
+        email:
+          type: string
+        mobile:
+          type: string
+        cuisines:
+          type: string
+        opening_hours:
+          type: string
+        closing_hours:
+          type: string
+        price_level:
+          type: string
+        rating:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+        latitude:
+          type: double
+        longitude:
+          type: double
+        location:
+          type: string
+        zipcode:
+          type: string
+        profile_photo:
+          type: array
+          description: A list of restaurant profile attachments.
+          items:
+            type: object
+            properties:
+              image:
+                type: string
+                description: The filename of the image.
+                example: "cons3.jpg"
+        photos:
+          type: array
+          description: A list of restaurant photos attachments.
+          items:
+            type: object
+            properties:
+              image:
+                type: string
+                description: The filename of the image.
+                example: "cons3.jpg"
     Error:
       type: object
       properties:
