@@ -5,7 +5,14 @@ const jwt = require("jsonwebtoken");
 const { secretOrKey } = require("../config/key");
 
 // Load models
-const { Restaurant, Attach } = require("../models");
+const {
+  Restaurant,
+  Attach,
+  GoogleResPhoto,
+  GoogleRestaurant,
+
+  GoogleResReview,
+} = require("../models");
 const resjson = require("../core/resjson");
 const { sequelize } = require("../config/db");
 const attach = require("../controller/attachController");
