@@ -11,7 +11,7 @@ info:
     url: https://www.tecnovators.com/
   version: v1
 servers:
-  - url: https://dine-oh-api.tecnovaters.com/api/v1
+  - url: https://dine-ohapi.tecnovaters.com/api/v1
     description: Development Server
   - url: http://localhost:7000/api/v1
     description: Local Host
