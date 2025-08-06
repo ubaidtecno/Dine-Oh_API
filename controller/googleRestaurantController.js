@@ -97,6 +97,37 @@ let getAllGoogleRestaurant = async (req, res) => {
   }
 };
 
+// Retrieve single
+const getGoogleRestaurant = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const restaurant = await GoogleRestaurant.findOne({
+      where: { id },
+      include: [
+        {
+          model: GoogleResPhoto,
+          as: "photos",
+          required: false,
+        },
+        {
+          model: GoogleResReview,
+          as: "reviews",
+          required: false,
+        },
+      ],
+    });
+
+    if (!restaurant) {
+      return res.status(404).json(resjson("", "Restaurant not found", "", 1));
+    }
+
+    return res.json(resjson(restaurant, "", "", 0));
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(resjson("", "Internal Server Error", "", 1));
+  }
+};
+
 // Example location: Chennai
 const location = "13.0827,80.2707";
 const radius = 3000; // meters
@@ -135,7 +166,7 @@ let googleRestaurantPlaces = async (req, res) => {
         ),
         country: getComponent(data.address_components, "country"),
         zip_code: getComponent(data.address_components, "postal_code"),
-        phone_number: data.formatted_phone_number,
+        phone_number: data.formatted_phone_number || null,
         lat: data.geometry?.location?.lat,
         lng: data.geometry?.location?.lng,
         weekday_text: data.opening_hours?.weekday_text || [],
@@ -151,8 +182,15 @@ let googleRestaurantPlaces = async (req, res) => {
         website: data.website || null,
       };
 
-      await saveRestaurantToDB(restaurant);
-      detailedRestaurants.push(restaurant);
+      // Check if an restaurant already exists
+      const existingRestaurant = await GoogleRestaurant.findOne({
+        where: { place_id: r.place_id },
+      });
+
+      if (!existingRestaurant) {
+        await saveRestaurantToDB(restaurant);
+        detailedRestaurants.push(restaurant);
+      }
     }
 
     res.json(detailedRestaurants);
@@ -561,4 +599,5 @@ module.exports = {
   getAllGoogleRestaurant,
   googleSingleRestaurantByPlaceID,
   googleRestaurantPlaces,
+  getGoogleRestaurant,
 };

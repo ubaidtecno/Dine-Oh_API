@@ -47,9 +47,10 @@ module.exports = db.sequelize.define(
     },
     place_id: {
       type: Sequelize.STRING,
+      unique: true,
     },
     rating: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.DECIMAL(2, 1),
     },
     reference: {
       type: Sequelize.STRING,

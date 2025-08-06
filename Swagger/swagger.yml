@@ -348,6 +348,75 @@ paths:
       security:
         - http: []
 
+  /google_restaurants:
+    get:
+      tags:
+        - Google Restaurants
+      summary: Get all Google Restaurants
+      description: Returns all Google Restaurants
+      parameters:
+        - name: filter
+          in: query
+          description: Filter Google Restaurants
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and name
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and name
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /google_restaurants/{id}:
+    get:
+      tags:
+        - Google Restaurants
+      summary: Get single Google Restaurant
+      description: Returns particular Google Restaurant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+   
+
+  
+
 # Components
 components:
   schemas:
