@@ -69,6 +69,32 @@ let getAllGoogleRestaurant = async (req, res) => {
           ],
         };
         break;
+      case "rating":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { rating: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
+      case "lat":
+        obj.where = {
+          [Op.and]: [filter.where, { lat: { [Op.like]: `%${searchString}%` } }],
+        };
+        break;
+      case "lng":
+        obj.where = {
+          [Op.and]: [filter.where, { lng: { [Op.like]: `%${searchString}%` } }],
+        };
+        break;
+      case "zip_code":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { zip_code: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
     }
   } else if (
     searchString !== "" &&
@@ -82,6 +108,10 @@ let getAllGoogleRestaurant = async (req, res) => {
           [Op.or]: [
             { id: { [Op.like]: `%${searchString}%` } },
             { name: { [Op.like]: `%${searchString}%` } },
+            { rating: { [Op.like]: `%${searchString}%` } },
+            { lat: { [Op.like]: `%${searchString}%` } },
+            { lng: { [Op.like]: `%${searchString}%` } },
+            { zip_code: { [Op.like]: `%${searchString}%` } },
           ],
         },
       ],
