@@ -4,6 +4,7 @@ const router = express.Router();
 const {
   signUp,
   login,
+  adminLogin,
   forgotPassword,
   verifyOtp,
   resetPassword,
@@ -19,6 +20,7 @@ const { auth } = require("../middleware/auth");
 
 router.post("/signup", signUp);
 router.post("/login", login);
+router.post("/admin/login", adminLogin);
 router.post("/forgot_password", forgotPassword);
 router.post("/verify_otp", verifyOtp);
 router.post("/reset_password", resetPassword);

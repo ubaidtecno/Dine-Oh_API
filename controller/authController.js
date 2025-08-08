@@ -1,4 +1,4 @@
-const { User } = require("../models");
+const { User, Roles } = require("../models");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { secretOrKey } = require("../config/key");
@@ -26,6 +26,7 @@ const signUp = async (req, res) => {
     let hashedPassword = bcrypt.hashSync(req.body.password, 10);
     let userData = {
       ...req.body,
+      role_id: 3,
       password: hashedPassword,
     };
     let newuser = await User.create(userData);
@@ -40,7 +41,6 @@ const signUp = async (req, res) => {
   }
 };
 
-// Controller function
 const login = async (req, res) => {
   try {
     const { mobile, password } = req.body;
@@ -51,6 +51,14 @@ const login = async (req, res) => {
 
     if (!user) {
       return res.status(401).json(resjson("", "User not found.", "", 1));
+    }
+
+    // Check if the user's role_id is 3
+    const userRole = user.role_id ? user.role_id : null;
+    if (userRole !== 3) {
+      return res
+        .status(403)
+        .json(resjson("", "Access denied. Unauthorized role.", "", 1));
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -74,6 +82,55 @@ const login = async (req, res) => {
     return res.status(200).json(response);
   } catch (error) {
     console.error("Error in login:", error);
+    return res.status(500).json(resjson("", "Internal server error", "", 1));
+  }
+};
+
+const adminLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({
+      where: { email },
+      include: {
+        model: Roles,
+        required: false,
+      },
+    });
+
+    if (!user) {
+      return res.status(401).json(resjson("", "Admin not found.", "", 1));
+    }
+
+    // Check if the user's role_id is 1
+    const userRole = user.role_id ? user.role_id : null;
+    if (userRole == 3) {
+      return res
+        .status(403)
+        .json(resjson("", "Access denied. Unauthorized role.", "", 1));
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res
+        .status(422)
+        .json(resjson("", "Invalid mobile or password.", "", 1));
+    }
+
+    const session_token = jwt.sign({ id: user.id }, secretOrKey, {
+      expiresIn: "2h",
+    });
+
+    const customValues = _.omit(user.dataValues, ["password", "last_otp"]);
+    const response = {
+      token: session_token,
+      ...resjson(customValues, "Admin Login Successfully"),
+    };
+
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error("Error in admin login:", error);
     return res.status(500).json(resjson("", "Internal server error", "", 1));
   }
 };
@@ -366,9 +423,28 @@ const deleteUser = async (req, res) => {
   }
 };
 
+async function changepassword(id, password) {
+  return new Promise((resolve, reject) => {
+    bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.hash(password, salt, async (err, hash) => {
+        if (err) {
+          reject(err);
+        }
+        try {
+          await User.update({ password: hash }, { where: { id } });
+          resolve();
+        } catch (error) {
+          reject(error);
+        }
+      });
+    });
+  });
+}
+
 module.exports = {
-  login,
   signUp,
+  login,
+  adminLogin,
   forgotPassword,
   verifyOtp,
   resetPassword,

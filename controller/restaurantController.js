@@ -1,152 +1,14 @@
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const { secretOrKey } = require("../config/key");
 
 // Load models
-const {
-  Restaurant,
-  Attach,
-  GoogleResPhoto,
-  GoogleRestaurant,
-
-  GoogleResReview,
-} = require("../models");
+const { Restaurant, Attach } = require("../models");
 const resjson = require("../core/resjson");
 const { sequelize } = require("../config/db");
-const attach = require("../controller/attachController");
+const attach = require("./attachController");
 const _ = require("lodash");
 
 // Controller function
-const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    const restaurant = await Restaurant.findOne({
-      where: { email },
-    });
-
-    if (!restaurant.email) {
-      return res.status(401).json(resjson("", "Restaurant Not Found", "", 1));
-    }
-
-    if (!restaurant.is_verified) {
-      return res
-        .status(401)
-        .json(resjson("", "Restaurant Not verified", "", 1));
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, restaurant.password);
-
-    if (!isPasswordValid) {
-      return res
-        .status(422)
-        .json(resjson("", "Incorrect email or password.", "", 1));
-    }
-
-    const session_token = jwt.sign({ id: restaurant.id }, secretOrKey, {
-      expiresIn: "12h",
-    });
-
-    const customValues = _.omit(restaurant.dataValues, [
-      "password",
-      "last_otp",
-    ]);
-    const response = {
-      token: session_token,
-      ...resjson(customValues, "Login Successfully"),
-    };
-
-    return res.status(200).json(response);
-  } catch (error) {
-    console.error("Error in login:", error);
-    return res.status(500).json(resjson("", "Internal server error", "", 1));
-  }
-};
-
-const SignUp = async (req, res) => {
-  let email = req.body.email;
-  let mobile = !_.isEmpty(req.body.mobile) ? req.body.mobile : "";
-
-  if (email) {
-    let userByEmail = await getUser(email, "");
-    if (userByEmail) {
-      return res.status(400).json(resjson("", "Email already exist!", "", 1));
-    }
-  }
-
-  User.create(req.body)
-    .then(async (result) => {
-      const payload = { id: result.id, name: result.email };
-      const subject = `GLT - Set Password`;
-
-      jwt.sign(payload, keys.secretOrKey, async (err, token) => {
-        if (err) {
-          console.log(err);
-          logger.error(`users.js - User Customer Register Jwt - Error :`, err);
-        }
-
-        if (result.is_portal_access && result.email) {
-          sendOtp(
-            result.email,
-            ``,
-            `<body>
-            <div
-               style="
-               width: 90%;
-               max-width: 90%;
-               padding: 15px;
-               background: #f5feff;
-               border: 5px solid #2196f3;
-               margin: auto;
-               font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-               border-radius: 18px;">
-    
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                <tr>
-                   <td style="padding: 15px 3px 32px; text-align: center;">
-                      <img src="https://aware360.s3.amazonaws.com/GLT_Logo.png" alt="" width="150" />
-                   </td>
-                </tr>
-              </table>
-    
-              Dear ${result.first_name},
-              <br />
-    
-              Welcome to GLT Wholesale System! Your account has been created. Use the following link to login.
-              <br />
-              <br />
-              <b><a href=https://glt-customer.tecnovaters.com/new-password/${token}>Set Password</a></b>
-              <br />
-              <br />
-              If you have any issues or need assistance please email us at <a href="mailto:customerservice@greatlakes-tackle.com" target="_blank">${process.env.SUPPORT_EMAIL}</a>
-              <br />
-              <br />
-              Sincerely,
-              <br />
-              The Great Lakes Tackle Team.
-              <br />
-              <br />
-            </div></body>`,
-            ``,
-            ``,
-            ``,
-            subject
-          );
-        }
-
-        return res
-          .status(200)
-          .json(resjson("", "Customer Created Successfully", "", 0));
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      logger.error(`users.js - User Customer Register Post - Error :`, err);
-      return res.status(400).json(resjson("", "Something Went wrong", "", 1));
-    });
-};
 
 let getAllRestaurant = async (req, res) => {
   let filter = req.query.filter;
@@ -231,6 +93,12 @@ const getRestaurant = async (req, res) => {
       include: [
         {
           model: Attach,
+          as: "restaurant_fssai_doc",
+          where: { class: "Restaurant_Fssai_Doc" },
+          required: false,
+        },
+        {
+          model: Attach,
           as: "restaurant_profile_photo",
           where: { class: "Restaurant_Profile_Photo" },
           required: false,
@@ -261,6 +129,19 @@ let createRestaurant = async (req, res) => {
     transaction = await sequelize.transaction();
 
     const newrestaurant = await Restaurant.create(req.body);
+
+    if (
+      req.body.documents !== undefined &&
+      req.body.documents !== null &&
+      req.body.documents.length > 0
+    ) {
+      let isStored = await attach.multiFileStore(
+        "Restaurant_Fssai_Doc",
+        req.body.documents,
+        newrestaurant.id,
+        false
+      );
+    }
 
     // Attachments for Restaurant
     if (
@@ -305,7 +186,19 @@ let updateRestaurant = async (req, res) => {
       where: { id },
     });
 
-    // Attachments for Profile
+    if (
+      req.body.documents !== undefined &&
+      req.body.documents !== null &&
+      req.body.documents.length > 0
+    ) {
+      let isStored = await attach.multiFileStore(
+        "Restaurant_Fssai_Doc",
+        req.body.documents,
+        id,
+        false
+      );
+    }
+
     if (
       req.body.profile_photo !== undefined &&
       req.body.profile_photo !== null &&
@@ -336,6 +229,12 @@ let updateRestaurant = async (req, res) => {
       const restaurant = await Restaurant.findOne({
         where: { id },
         include: [
+          {
+            model: Attach,
+            as: "restaurant_fssai_doc",
+            where: { class: "Restaurant_Fssai_Doc" },
+            required: false,
+          },
           {
             model: Attach,
             as: "restaurant_profile_photo",
@@ -373,7 +272,11 @@ let deleteRestaurant = async (req, res) => {
 
     await Attach.destroy({
       where: {
-        class: ["Restaurant_Photo", "Restaurant_Profile_Photo"],
+        class: [
+          "Restaurant_Fssai_Doc",
+          "Restaurant_Photo",
+          "Restaurant_Profile_Photo",
+        ],
         foreign_id: id,
       },
     });

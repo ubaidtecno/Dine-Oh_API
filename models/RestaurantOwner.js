@@ -1,36 +1,36 @@
 const Sequelize = require("sequelize");
 const db = require("../config/db");
-const Roles = require("./Roles");
 
 module.exports = db.sequelize.define(
-  "users",
+  "restaurant_owner",
   {
     id: {
       type: Sequelize.BIGINT,
       primaryKey: true,
       autoIncrement: true,
     },
-    role_id: {
-      type: Sequelize.BIGINT,
-      allowNull: false,
-      references: {
-        model: Roles,
-        key: "id",
-      },
-    },
-    first_name: {
-      type: Sequelize.STRING,
-    },
-    last_name: {
+    name: {
       type: Sequelize.STRING,
     },
     email: {
       type: Sequelize.STRING,
     },
     mobile_code: {
-      type: Sequelize.STRING(10),
+      type: Sequelize.STRING,
     },
     mobile: {
+      type: Sequelize.STRING(10),
+    },
+    PAN: {
+      type: Sequelize.STRING,
+    },
+    GST: {
+      type: Sequelize.STRING,
+    },
+    account_number: {
+      type: Sequelize.STRING,
+    },
+    ifsc_code: {
       type: Sequelize.STRING,
     },
     password: {
@@ -41,7 +41,7 @@ module.exports = db.sequelize.define(
     },
     is_verified: {
       type: Sequelize.TINYINT,
-    },
+    }
   },
   {
     timestamps: 1,

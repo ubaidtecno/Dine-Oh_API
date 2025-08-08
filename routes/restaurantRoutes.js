@@ -7,7 +7,7 @@ const {
   createRestaurant,
   updateRestaurant,
   deleteRestaurant,
-} = require("../controller/restaurantContrller");
+} = require("../controller/restaurantController.js");
 
 const { auth } = require("../middleware/auth");
 
@@ -15,7 +15,7 @@ router.get("/restaurants", auth, getAllRestaurant);
 
 router.get("/restaurants/:id", auth, getRestaurant);
 
-router.post("/restaurants", auth, createRestaurant);
+router.post("/restaurants", createRestaurant);
 
 router.put("/restaurants/:id", auth, updateRestaurant);
 

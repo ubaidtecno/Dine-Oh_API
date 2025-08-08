@@ -13,341 +13,179 @@ info:
 servers:
   - url: https://dine-ohapi.tecnovaters.com/api/v1
     description: Development Server
-  - url: http://localhost:7000/api/v1
+  - url: http://localhost:3700/api/v1
     description: Local Host
 
 paths:
-  /signup:
-   post:
-      tags:
-        - Users
-      summary: Creates a new user
-      description: Creates a new user
-      requestBody:
-        description: The users JSON you want to post
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Users"
-        required: true
-      responses:
-        "200":
-          description: New user added
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Users"
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - http: []
-      x-codegen-request-body-name: body
-  /login:
-    post:
-      tags:
-        - Users
-      summary: Field Agent login
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                mobile:
-                  type: string
-                password:
-                  type: string
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Success"
-        "default":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      x-codegen-request-body-name: body
-
-  /forgot_password:
-    post:
-      tags:
-        - Users
-      summary: Forgot password
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                mobile:
-                  type: string
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Success"
-        "default":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - http: []
-      x-codegen-request-body-name: body
-  /verify_otp:
-    post:
-      summary: Verify Otp
-      tags:
-        - Users
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                mobile:
-                  type: string
-                otp:
-                  type: string
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Success"
-        "default":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - http: []
-  /reset_password:
-    post:
-      summary: Reset Password
-      tags:
-        - Users
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: number
-                password:
-                  type: string
-                confirm_password:
-                  type: string
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Success"
-        "default":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - http: []
-  /change_password:
-    post:
-      summary: Change Password
-      tags:
-        - Users
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                current_password:
-                  type: string
-                password:
-                  type: string
-                confirm_password:
-                  type: string
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Success"
-        "default":
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - http: []
-
-  /me-user:
+  # Attachment Module
+  /attachments:
     get:
+      summary: Get a list of attachments
       tags:
-        - Users
-      summary: Get current user
-      description: Returns current user
-      responses:
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - http: []
-
-  /users:
-    get:
-      tags:
-        - Users
-      summary: Get all user
-      description: Returns all user
+        - Attachment
+      description: Retrieve attachments with optional filters, pagination, and sorting.
       parameters:
         - name: filter
           in: query
-          description: Filter users
+          description: JSON object to filter the attachments Should be passed as a JSON string
+          required: false
           schema:
             type: string
-            format: string
-        - name: searchField
-          in: query
-          description: search field of id and first_name
-          schema:
-            type: string
-            format: string
-        - name: searchString
-          in: query
-          description: search string of id and first_name
-          schema:
-            type: string
-            format: string
-        - name: offset
-          in: query
-          schema:
-            type: number
-            format: number
+            example: '{"where": {"class": "document"}}'
         - name: limit
           in: query
+          description: Limit the number of attachments returned.
+          required: false
           schema:
-            type: number
-            format: number
+            type: integer
+            example: 10
+        - name: offset
+          in: query
+          description: Number of attachments to skip before starting to collect the result set.
+          required: false
+          schema:
+            type: integer
+            example: 0
       responses:
-        default:
-          description: Unexpected error
+        "200":
+          description: Attachments fetched successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - http: []
-  /users/{id}:
-    get:
-      tags:
-        - Users
-      summary: Get single user
-      description: Returns particular user
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: number
-      responses:
-        default:
-          description: Unexpected error
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                        description: Total count of attachments matching the filter criteria.
+                        example: 50
+                      rows:
+                        type: array
+                        description: List of attachments.
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              description: Unique identifier of the attachment.
+                              example: 1
+                            class:
+                              type: string
+                              description: Class/type of the attachment.
+                              example: "document"
+                            is_primary:
+                              type: boolean
+                              description: Indicates if the attachment is primary.
+                              example: true
+                            foreign_id:
+                              type: integer
+                              description: ID of the related entity.
+                              example: 5
+                            file_name:
+                              type: string
+                              description: Name of the file.
+                              example: "example.pdf"
+                            dir:
+                              type: string
+                              description: Directory where the file is stored.
+                              example: "/uploads/documents"
+                            file_size:
+                              type: integer
+                              description: Size of the file in bytes.
+                              example: 204800
+                            createdAt:
+                              type: string
+                              format: date-time
+                              description: Creation timestamp of the attachment.
+                              example: "2024-11-04T10:00:00Z"
+                            updatedAt:
+                              type: string
+                              format: date-time
+                              description: Last update timestamp of the attachment.
+                              example: "2024-11-04T10:00:00Z"
+                  message:
+                    type: string
+                    example: "Attachments fetched successfully"
+        "422":
+          description: Unprocessable Entity - Something went wrong
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - http: []
-    put:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 422
+                  data:
+                    type: "null"
+                  message:
+                    type: string
+                    example: "Something Went wrong"
+    post:
+      summary: Upload the file
       tags:
-        - Users
-      summary: Update user by its id
-      description: Update user by its id
-      parameters:
-        - name: id
-          in: path
-          description: ID of user to update
-          required: true
-          schema:
-            type: string
-            format: string
+        - Attachment
       requestBody:
-        description: The user JSON you want to post
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Users"
         required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Choose the file to upload
       responses:
         "200":
-          description: User updated
+          description: File uploaded successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Users"
-        default:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "File uploaded successfully"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-      x-codegen-request-body-name: body
       security:
         - http: []
+  /attachments/{id}:
     delete:
-      tags:
-        - Users
-      summary: Delete user
-      description: Deletes a single user based on the ID supplied
+      summary: delete attachment details
       parameters:
         - name: id
           in: path
-          description: ID of user to delete
           required: true
-          schema:
-            type: string
-            format: string
+          type: string
+
+      tags:
+        - Attachment
       responses:
-        "200":
-          description: User deleted
-          content: {}
         default:
           description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          schema:
+            $ref: "#/definitions/Error"
       security:
         - http: []
 
+  # Google Restaurant Module
   /google_restaurants:
     get:
       tags:
@@ -413,14 +251,1434 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - http: []
-   
 
-  
+  # Influencer Module
+  /influencers/signup:
+    post:
+      tags:
+        - Influencer
+      summary: Signup a new influencer
+      description: Signup a new influencer
+      requestBody:
+        description: The influencer JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Influencers"
+        required: true
+      responses:
+        "200":
+          description: New influencer added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Influencers"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /influencers/login:
+    post:
+      tags:
+        - Influencer
+      summary: Dine Oh Influencer login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      x-codegen-request-body-name: body
+  /influencers/forgot_password:
+    post:
+      tags:
+        - Influencer
+      summary: Influencer Forgot password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /influencers/verify_otp:
+    post:
+      summary: Influencer Verify Otp
+      tags:
+        - Influencer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                otp:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /influencers/reset_password:
+    post:
+      summary: Influencer Reset Password
+      tags:
+        - Influencer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: number
+                password:
+                  type: string
+                confirm_password:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /influencers/set_password:
+    post:
+      summary: Influencer Set Password
+      tags:
+        - Influencer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /influencers:
+    get:
+      tags:
+        - Influencer
+      summary: Fetch all influencers
+      description: Returns all influencers from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter influencers
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and date
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and date
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched influencers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Influencers"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - Influencer
+      summary: Creates a new influencer
+      description: Creates a new influencer
+      requestBody:
+        description: The influencer JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Influencers"
+        required: true
+      responses:
+        "200":
+          description: New influencer added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Influencers"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /influencers/{id}:
+    get:
+      tags:
+        - Influencer
+      summary: Fetch influencer
+      description: Returns a influencer based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of influencer to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched Influencer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Influencers"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - Influencer
+      summary: Update influencer by its id
+      description: Update influencer by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of influencer to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The influencer JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Influencers"
+        required: true
+      responses:
+        "200":
+          description: Influencer updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Influencers"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - Influencer
+      summary: Delete influencer
+      description: Deletes a single influencer based on the ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of influencer to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Influencer deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
+  # Restaurant Module
+  /restaurants:
+    get:
+      tags:
+        - Restaurant
+      summary: Fetch all restaurants
+      description: Returns all restaurants from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter restaurants
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and date
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and date
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched restaurants
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Restaurants"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - Restaurant
+      summary: Creates a new restaurant
+      description: Creates a new restaurant
+      requestBody:
+        description: The restaurant JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Restaurants"
+        required: true
+      responses:
+        "200":
+          description: New restaurant added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Restaurants"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /restaurants/{id}:
+    get:
+      tags:
+        - Restaurant
+      summary: Fetch restaurant
+      description: Returns a restaurant based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of restaurant to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched restaurant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Restaurants"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - Restaurant
+      summary: Update restaurant by its id
+      description: Update restaurant by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of restaurant to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The restaurant JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Restaurants"
+        required: true
+      responses:
+        "200":
+          description: Restaurant updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Restaurants"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - Restaurant
+      summary: Delete restaurant
+      description: Deletes a single restaurant based on the ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of restaurant to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Restaurant deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
+  # Restaurant Profile Module
+  /restaurant_profile/signup:
+    post:
+      tags:
+        - RestaurantProfile
+      summary: Signup a new restaurant
+      description: Signup a new restaurant
+      requestBody:
+        description: The restaurant JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestaurantSignUp"
+        required: true
+      responses:
+        "200":
+          description: New restaurant profile added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantOwners"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /restaurant_profile/login:
+    post:
+      tags:
+        - RestaurantProfile
+      summary: Dine Oh Restaurant login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      x-codegen-request-body-name: body
+  /restaurant_profile/forgot_password:
+    post:
+      tags:
+        - RestaurantProfile
+      summary: Restaurant Profile Forgot password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /restaurant_profile/verify_otp:
+    post:
+      summary: Restaurant Profile Verify Otp
+      tags:
+        - RestaurantProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                otp:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /restaurant_profile/reset_password:
+    post:
+      summary: Restaurant Profile Reset Password
+      tags:
+        - RestaurantProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: number
+                password:
+                  type: string
+                confirm_password:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /restaurant_profile/set_password:
+    post:
+      summary: Restaurant Profile Set Password
+      tags:
+        - RestaurantProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /restaurant_profile:
+    get:
+      tags:
+        - RestaurantProfile
+      summary: Fetch all restaurant profiles
+      description: Returns all restaurant profiles from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter restaurant profiles
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and date
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and date
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched restaurant profiles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantOwners"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - RestaurantProfile
+      summary: Creates a new restaurant profile
+      description: Creates a new restaurant profile
+      requestBody:
+        description: The restaurant profile JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestaurantOwners"
+        required: true
+      responses:
+        "200":
+          description: New restaurant profile added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantOwners"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /restaurant_profile/{id}:
+    get:
+      tags:
+        - RestaurantProfile
+      summary: Fetch restaurant profile
+      description: Returns a restaurant profile based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of restaurant profile to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched restaurant profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantOwners"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - RestaurantProfile
+      summary: Update restaurant profile by its id
+      description: Update restaurant profile by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of restaurant profile to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The restaurant profile JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestaurantOwners"
+        required: true
+      responses:
+        "200":
+          description: Restaurant Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Restaurants"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - RestaurantProfile
+      summary: Delete restaurant profile
+      description: Deletes a single restaurant profile based on the ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of restaurant profile to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Restaurant Profile deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
+  # Roles
+  /roles:
+    get:
+      tags:
+        - Roles
+      summary: Fetch all roles
+      description: Returns all roles from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter roles
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and first_name
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and first_name
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched all roles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Roles"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - Roles
+      summary: Creates a new roles
+      description: Creates a new roles
+      requestBody:
+        description: The roles JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Roles"
+        required: true
+      responses:
+        "200":
+          description: New roles added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Roles"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /roles/{id}:
+    get:
+      tags:
+        - Roles
+      summary: Fetch roles
+      description: Returns a roles based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of roles to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched roles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Roles"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - Roles
+      summary: Update roles by its id
+      description: Update roles by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of roles to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The roles JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Roles"
+        required: true
+      responses:
+        "200":
+          description: Role updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Roles"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - Roles
+      summary: Delete Role
+      description: Deletes a single role based on the ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of role to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Role deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
+  # User Module
+  /signup:
+    post:
+      tags:
+        - User
+      summary: Signup a new user
+      description: Signup a new user
+      requestBody:
+        description: The users JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+        required: true
+      responses:
+        "200":
+          description: New user added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /login:
+    post:
+      tags:
+        - User
+      summary: Dino Oh User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      x-codegen-request-body-name: body
+  /admin/login:
+    post:
+      tags:
+        - User
+      summary: Admin login and Super admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      x-codegen-request-body-name: body
+  /forgot_password:
+    post:
+      tags:
+        - User
+      summary: Forgot password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /verify_otp:
+    post:
+      summary: Verify Otp
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                otp:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /reset_password:
+    post:
+      summary: Reset Password
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: number
+                password:
+                  type: string
+                confirm_password:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /change_password:
+    post:
+      summary: Change Password
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                current_password:
+                  type: string
+                password:
+                  type: string
+                confirm_password:
+                  type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /me-user:
+    get:
+      tags:
+        - User
+      summary: Get current user
+      description: Returns current user
+      responses:
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /users:
+    get:
+      tags:
+        - User
+      summary: Get all user
+      description: Returns all user
+      parameters:
+        - name: filter
+          in: query
+          description: Filter users
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and first_name
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and first_name
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /users/{id}:
+    get:
+      tags:
+        - User
+      summary: Get single user
+      description: Returns particular user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - User
+      summary: Update user by its id
+      description: Update user by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of user to update
+          required: true
+          schema:
+            type: string
+            format: string
+      requestBody:
+        description: The user JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+        required: true
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      x-codegen-request-body-name: body
+      security:
+        - http: []
+    delete:
+      tags:
+        - User
+      summary: Delete user
+      description: Deletes a single user based on the ID supplied
+      parameters:
+        - name: id
+          in: path
+          description: ID of user to delete
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        "200":
+          description: User deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
 
 # Components
 components:
   schemas:
-    Users:
+    Attachments:
+      type: object
+      properties:
+        class:
+          type: string
+        is_primary:
+          type: boolean
+          default: true
+        foreign_id:
+          type: number
+        file_name:
+          type: string
+        dir:
+          type: string
+        file_size:
+          type: number
+    Influencers:
       type: object
       properties:
         first_name:
@@ -435,6 +1693,16 @@ components:
           type: string
         password:
           type: string
+        profile_photo:
+          type: array
+          description: A list of restaurant profile attachments.
+          items:
+            type: object
+            properties:
+              image:
+                type: string
+                description: The filename of the image.
+                example: "cons3.jpg"
     Restaurants:
       type: object
       properties:
@@ -473,6 +1741,11 @@ components:
           type: string
         zipcode:
           type: string
+        password:
+          type: string
+        is_verified:
+          type: boolean
+          default: false
         profile_photo:
           type: array
           description: A list of restaurant profile attachments.
@@ -493,6 +1766,156 @@ components:
                 type: string
                 description: The filename of the image.
                 example: "cons3.jpg"
+        documents:
+          type: array
+          description: A list of document attachments.
+          items:
+            type: object
+            properties:
+              image:
+                type: string
+                description: The filename of the image.
+                example: "doc1.jpg"
+    RestaurantOwners:
+      type: object
+      properties:
+        name:
+          type: string
+          format: string
+        email:
+          type: string
+        mobile_code:
+          type: string
+        mobile:
+          type: string
+        PAN:
+          type: string
+        GST:
+          type: string
+        account_number:
+          type: string
+        ifsc_code:
+          type: string
+        password:
+          type: string
+        is_verified:
+          type: boolean
+          default: false
+    RestaurantSignUp:
+      type: object
+      properties:
+        name:
+          type: string
+          format: string
+        email:
+          type: string
+        mobile_code:
+          type: string
+        mobile:
+          type: string
+        PAN:
+          type: string
+        GST:
+          type: string
+        account_number:
+          type: string
+        ifsc_code:
+          type: string
+        password:
+          type: string
+        restaurants:
+          type: array
+          description: List of restaurants to be registered by the owner.
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+              email:
+                type: string
+              mobile:
+                type: string
+              price_level:
+                type: string
+              rating:
+                type: string
+              address:
+                type: string
+              city:
+                type: string
+              state:
+                type: string
+              country:
+                type: string
+              latitude:
+                type: number
+                format: double
+              longitude:
+                type: number
+                format: double
+              location:
+                type: string
+              zipcode:
+                type: string
+              profile_photo:
+                type: array
+                description: A list of restaurant profile attachments.
+                items:
+                  type: object
+                  properties:
+                    image:
+                      type: string
+                      description: The filename of the image.
+                      example: "profile1.jpg"
+              photos:
+                type: array
+                description: A list of restaurant photos attachments.
+                items:
+                  type: object
+                  properties:
+                    image:
+                      type: string
+                      description: The filename of the image.
+                      example: "photo1.jpg"
+              documents:
+                type: array
+                description: A list of document attachments.
+                items:
+                  type: object
+                  properties:
+                    image:
+                      type: string
+                      description: The filename of the image.
+                      example: "doc1.jpg"
+    Roles:
+      type: object
+      properties:
+        name:
+          type: string
+        isActive:
+          type: boolean
+          format: boolean
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    Users:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        mobile_code:
+          type: string
+        mobile:
+          type: string
+        password:
+          type: string
     Error:
       type: object
       properties:

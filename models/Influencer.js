@@ -1,27 +1,18 @@
 const Sequelize = require("sequelize");
 const db = require("../config/db");
-const Roles = require("./Roles");
 
 module.exports = db.sequelize.define(
-  "users",
+  "influencer",
   {
     id: {
       type: Sequelize.BIGINT,
       primaryKey: true,
       autoIncrement: true,
     },
-    role_id: {
-      type: Sequelize.BIGINT,
-      allowNull: false,
-      references: {
-        model: Roles,
-        key: "id",
-      },
-    },
-    first_name: {
+    user_name: {
       type: Sequelize.STRING,
     },
-    last_name: {
+    name: {
       type: Sequelize.STRING,
     },
     email: {
