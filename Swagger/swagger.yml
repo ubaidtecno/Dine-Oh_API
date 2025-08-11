@@ -1921,9 +1921,9 @@ components:
         country:
           type: string
         latitude:
-          type: double
+          type: string
         longitude:
-          type: double
+          type: string
         location:
           type: string
         zipcode:
