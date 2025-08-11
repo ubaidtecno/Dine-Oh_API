@@ -40,10 +40,10 @@ module.exports = db.sequelize.define(
       type: Sequelize.STRING,
     },
     lat: {
-      type: Sequelize.DOUBLE,
+      type: Sequelize.STRING,
     },
     lng: {
-      type: Sequelize.DOUBLE,
+      type: Sequelize.STRING,
     },
     place_id: {
       type: Sequelize.STRING,
