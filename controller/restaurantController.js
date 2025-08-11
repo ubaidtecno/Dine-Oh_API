@@ -64,6 +64,62 @@ let getAllRestaurant = async (req, res) => {
           ],
         };
         break;
+      case "cuisines":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { cuisines: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
+      case "rating":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { rating: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
+      case "latitude":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { latitude: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
+      case "longitude":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { longitude: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
+      case "location":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { location: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
+      case "zipcode":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { zipcode: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
+      case "price_level":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { price_level: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
     }
   } else if (
     searchString !== "" &&
@@ -77,6 +133,13 @@ let getAllRestaurant = async (req, res) => {
           [Op.or]: [
             { id: { [Op.like]: `%${searchString}%` } },
             { name: { [Op.like]: `%${searchString}%` } },
+            { cuisines: { [Op.like]: `%${searchString}%` } },
+            { rating: { [Op.like]: `%${searchString}%` } },
+            { latitude: { [Op.like]: `%${searchString}%` } },
+            { longitude: { [Op.like]: `%${searchString}%` } },
+            { location: { [Op.like]: `%${searchString}%` } },
+            { zipcode: { [Op.like]: `%${searchString}%` } },
+            { price_level: { [Op.like]: `%${searchString}%` } },
           ],
         },
       ],
