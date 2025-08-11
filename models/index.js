@@ -28,13 +28,11 @@ Restaurant.hasMany(Attach, {
   foreignKey: "foreign_id",
   as: "restaurant_photos",
 });
-Restaurant.hasMany(WorkingDays, {
-  foreignKey: "restaurant_id",
-  constraints: false,
+Restaurant.hasMany(Attach, {
+  foreignKey: "foreign_id",
+  as: "restaurant_fssai_doc",
 });
-
-Review.belongsTo(User, { foreignKey: "user_id", constraints: false });
-Review.belongsTo(Restaurant, { foreignKey: "foreign_id", constraints: false });
+User.belongsTo(Roles, { foreignKey: "role_id" });
 
 GoogleRestaurant.hasMany(GoogleResPhoto, {
   foreignKey: "google_restaurant_id",
@@ -44,6 +42,13 @@ GoogleRestaurant.hasMany(GoogleResReview, {
   foreignKey: "google_restaurant_id",
   as: "reviews",
 });
+
+Restaurant.hasMany(WorkingDays, {
+  foreignKey: "restaurant_id",
+  constraints: false,
+});
+Review.belongsTo(User, { foreignKey: "user_id", constraints: false });
+Review.belongsTo(Restaurant, { foreignKey: "foreign_id", constraints: false });
 
 module.exports = {
   User,

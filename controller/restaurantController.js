@@ -309,6 +309,7 @@ let deleteRestaurant = async (req, res) => {
         foreign_id: id,
       },
     });
+    await WorkingDays.destroy({ where: { restaurant_id: id } });
 
     const resp = await Restaurant.destroy({ where: { id } });
 
