@@ -185,6 +185,176 @@ paths:
       security:
         - http: []
 
+  # Banner Module
+  /banners:
+    get:
+      tags:
+        - Banner
+      summary: Fetch all banners
+      description: Returns all banners from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter banners
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and date
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and date
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched banners
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Banners"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - Banner
+      summary: Creates a new banner
+      description: Creates a new banner
+      requestBody:
+        description: The banner JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Banners"
+        required: true
+      responses:
+        "200":
+          description: New banner added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Banners"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /banners/{id}:
+    get:
+      tags:
+        - Banner
+      summary: Fetch banner
+      description: Returns a banner based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of banner to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched banner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Banners"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - Banner
+      summary: Update banner by its id
+      description: Update banner by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of banner to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The banner JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Banners"
+        required: true
+      responses:
+        "200":
+          description: Influencer updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Banners"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - Banner
+      summary: Delete banner
+      description: Deletes a single banner based on the ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of banner to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: banner deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
   # Google Restaurant Module
   /google_restaurants:
     get:
@@ -1678,6 +1848,23 @@ components:
           type: string
         file_size:
           type: number
+    Banners:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        photos:
+          type: array
+          description: A list of restaurant profile attachments.
+          items:
+            type: object
+            properties:
+              image:
+                type: string
+                description: The filename of the image.
+                example: "cons3.jpg"
     Influencers:
       type: object
       properties:

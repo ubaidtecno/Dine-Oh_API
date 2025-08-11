@@ -11,7 +11,7 @@ const {
 
 const { auth } = require("../middleware/auth");
 
-router.get("/roles",auth, getAllRoles);
+router.get("/roles", getAllRoles);
 
 router.get("/roles/:id",auth, getRoles);
 

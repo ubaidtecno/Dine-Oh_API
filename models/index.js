@@ -1,4 +1,5 @@
 const Attach = require("./Attachment");
+const Banner = require("./Banner");
 const GoogleResPhoto = require("./GoogleResPhoto");
 const GoogleResReview = require("./GoogleResReview");
 const GoogleRestaurant = require("./GoogleRestaurant");
@@ -9,6 +10,10 @@ const Restaurant = require("./Restaurant");
 const RestaurantOwner = require("./RestaurantOwner");
 const User = require("./User");
 
+Banner.hasOne(Attach, {
+  foreignKey: "foreign_id",
+  as: "banners",
+});
 Influencer.hasOne(Attach, {
   foreignKey: "foreign_id",
   as: "influencer_profile_photo",
@@ -38,6 +43,7 @@ GoogleRestaurant.hasMany(GoogleResReview, {
 
 module.exports = {
   Attach,
+  Banner,
   GoogleResPhoto,
   GoogleResReview,
   GoogleRestaurant,

@@ -3,6 +3,7 @@ const router = Router();
 
 const attach = require("./attachRoutes");
 const authRoutes = require("./authRoutes");
+const banner = require("./bannerRoutes");
 const googleRestaurant = require("./googleRestaurantRoutes");
 const influencer = require("./influencerRoutes");
 const restaurant = require("./restaurantRoutes");
@@ -13,6 +14,7 @@ const roles = require("./rolesRoutes");
 router.use(
   attach,
   authRoutes,
+  banner,
   googleRestaurant,
   influencer,
   restaurant,
