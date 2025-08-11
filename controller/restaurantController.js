@@ -2,7 +2,15 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
 // Load models
-const { Restaurant, Attach } = require("../models");
+const {
+  Restaurant,
+  Attach,
+  WorkingDays,
+  GoogleResPhoto,
+  GoogleRestaurant,
+
+  GoogleResReview,
+} = require("../models");
 const resjson = require("../core/resjson");
 const { sequelize } = require("../config/db");
 const attach = require("./attachController");
@@ -109,6 +117,10 @@ const getRestaurant = async (req, res) => {
           where: { class: "Restaurant_Photo" },
           required: false,
         },
+        {
+          model: WorkingDays,
+          required: false,
+        },
       ],
     });
 
@@ -130,17 +142,19 @@ let createRestaurant = async (req, res) => {
 
     const newrestaurant = await Restaurant.create(req.body);
 
-    if (
-      req.body.documents !== undefined &&
-      req.body.documents !== null &&
-      req.body.documents.length > 0
-    ) {
-      let isStored = await attach.multiFileStore(
-        "Restaurant_Fssai_Doc",
-        req.body.documents,
-        newrestaurant.id,
-        false
-      );
+    if (req.body.working_days !== null && req.body.working_days !== undefined) {
+      for (let i = 0; i < req.body.working_days.length; i++) {
+        await WorkingDays.create({
+          restaurant_id: newrestaurant.id,
+          day: req.body.working_days[i].day,
+          starting_time: req.body.working_days[i].starting_time,
+          ending_time: req.body.working_days[i].ending_time,
+        })
+          .then()
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     }
 
     // Attachments for Restaurant
@@ -186,19 +200,30 @@ let updateRestaurant = async (req, res) => {
       where: { id },
     });
 
-    if (
-      req.body.documents !== undefined &&
-      req.body.documents !== null &&
-      req.body.documents.length > 0
-    ) {
-      let isStored = await attach.multiFileStore(
-        "Restaurant_Fssai_Doc",
-        req.body.documents,
-        id,
-        false
-      );
+    if (req.body.working_days !== null && req.body.working_days !== undefined) {
+      await WorkingDays.destroy({
+        where: { restaurant_id: req.params.id },
+      })
+        .then(async () => {
+          for (let i = 0; i < req.body.working_days.length; i++) {
+            await WorkingDays.create({
+              restaurant_id: req.params.id,
+              day: req.body.working_days[i].day,
+              starting_time: req.body.working_days[i].starting_time,
+              ending_time: req.body.working_days[i].ending_time,
+            })
+              .then()
+              .catch((err) => {
+                console.log(err);
+              });
+          }
+        })
+        .catch((err) => {
+          console.log("delete working days", err);
+        });
     }
 
+    // Attachments for Profile
     if (
       req.body.profile_photo !== undefined &&
       req.body.profile_photo !== null &&
@@ -245,6 +270,10 @@ let updateRestaurant = async (req, res) => {
             model: Attach,
             as: "restaurant_photos",
             where: { class: "Restaurant_Photo" },
+            required: false,
+          },
+          {
+            model: WorkingDays,
             required: false,
           },
         ],

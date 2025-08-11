@@ -1,25 +1,27 @@
 const { Router } = require("express");
 const router = Router();
 
-const attach = require("./attachRoutes");
 const authRoutes = require("./authRoutes");
-const banner = require("./bannerRoutes");
-const googleRestaurant = require("./googleRestaurantRoutes");
-const influencer = require("./influencerRoutes");
 const restaurant = require("./restaurantRoutes");
+const review = require("./reviewRoutes");
+const googleRestaurant = require("./googleRestaurantRoutes");
+const attach = require("./attachRoutes");
+const banner = require("./bannerRoutes");
+const influencer = require("./influencerRoutes");
 const restaurantOwner = require("./restaurant_ownerRoutes");
 const roles = require("./rolesRoutes");
 
 // Use Routes
 router.use(
-  attach,
   authRoutes,
-  banner,
-  googleRestaurant,
-  influencer,
   restaurant,
+  banner,
+  influencer,
   restaurantOwner,
-  roles
+  roles,
+  review,
+  googleRestaurant,
+  attach
 );
 
 module.exports = router;
