@@ -10,11 +10,14 @@ const {
   deleteRestaurantReview,
   getReviewForSingleRestaurant,
   getReviewRatingBasedOnRestaurant,
+  getAllReview,
 } = require("../controller/reviewController");
 
 const { auth } = require("../middleware/auth");
 
 router.get("/reviews/stats", auth, reviewStats);
+
+router.get("/reviews", auth, getAllReview);
 
 router.get("/review/restaurants", getReviewRatingBasedOnRestaurant);
 
