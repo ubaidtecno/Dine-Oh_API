@@ -49,6 +49,10 @@ Restaurant.hasMany(WorkingDays, {
 });
 Review.belongsTo(User, { foreignKey: "user_id", constraints: false });
 Review.belongsTo(Restaurant, { foreignKey: "foreign_id", constraints: false });
+Review.hasMany(Attach, {
+  foreignKey: "foreign_id",
+  as: "restaurant_review_photos",
+});
 
 module.exports = {
   User,
