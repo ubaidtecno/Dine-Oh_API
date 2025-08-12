@@ -940,7 +940,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - http: []
-        
+
   # Restaurant Module
   /restaurants:
     get:
@@ -1464,7 +1464,258 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - http: []
+ 
+   # Review Module
 
+  # Reviews
+  /reviews:
+    get:
+      tags:
+        - Restaurant Reviews
+      summary: Fetch all Reviews
+      description: Returns all Reviews from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter Reviews
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id 
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched Reviews
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantReviews"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - Restaurant Reviews
+      summary: Creates a new Restaurant Review
+      description: Creates a new Restaurant Review
+      requestBody:
+        description: The Restaurant Review JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestaurantReviews"
+        required: true
+      responses:
+        "200":
+          description: New Restaurant Review added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantReviews"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /reviews/{id}:
+    get:
+      tags:
+        - Restaurant Reviews
+      summary: Fetch Review
+      description: Returns a Review based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of Review to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched Review
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantReviews"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - Restaurant Reviews
+      summary: Update Restaurant Review by its id
+      description: Update Restaurant Review by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of Restaurant Review to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The Restaurant Review JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestaurantReviews"
+        required: true
+      responses:
+        "200":
+          description: Restaurant Review updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantReviews"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - Restaurant Reviews
+      summary: Delete Restaurant Review
+      description: Deletes a single Restaurant Review based on the ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of Restaurant Review to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Restaurant Review deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /reviews_for_all_restaurant:
+    get:
+      tags:
+        - Restaurant Reviews
+      summary: Fetch all Restaurant Reviews
+      description: Returns all Restaurant Reviews from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter Restaurant Reviews
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id 
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched Restaurant Reviews
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantReviews"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /reviews_for_single_restaurant/{id}:  
+    get:
+      tags:
+        - Restaurant Reviews
+      summary: Fetch single Restaurant Review
+      description: Returns a single Restaurant Review based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: Restaurant ID
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched Restaurant Review
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantReviews"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    
   # Roles
   /roles:
     get:
@@ -1994,257 +2245,6 @@ paths:
       security:
         - http: []
 
-
- # Review Module
-  /reviews:
-    get:
-      tags:
-        - Restaurant Reviews
-      summary: Fetch all Reviews
-      description: Returns all Reviews from the system
-      parameters:
-        - name: filter
-          in: query
-          description: Filter Reviews
-          schema:
-            type: string
-            format: string
-        - name: searchField
-          in: query
-          description: search field of id 
-          schema:
-            type: string
-            format: string
-        - name: searchString
-          in: query
-          description: search string of id
-          schema:
-            type: string
-            format: string
-        - name: offset
-          in: query
-          schema:
-            type: number
-            format: number
-        - name: limit
-          in: query
-          schema:
-            type: number
-            format: number
-      responses:
-        "200":
-          description: Fetched Reviews
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RestaurantReviews"
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - http: []
-    post:
-      tags:
-        - Restaurant Reviews
-      summary: Creates a new Restaurant Review
-      description: Creates a new Restaurant Review
-      requestBody:
-        description: The Restaurant Review JSON you want to post
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RestaurantReviews"
-        required: true
-      responses:
-        "200":
-          description: New Restaurant Review added
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RestaurantReviews"
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - http: []
-      x-codegen-request-body-name: body
-  /reviews/{id}:
-    get:
-      tags:
-        - Restaurant Reviews
-      summary: Fetch Review
-      description: Returns a Review based on a single ID
-      parameters:
-        - name: id
-          in: path
-          description: ID of Review to fetch
-          required: true
-          schema:
-            type: number
-            format: number
-      responses:
-        "200":
-          description: Fetched Review
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RestaurantReviews"
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - http: []
-    put:
-      tags:
-        - Restaurant Reviews
-      summary: Update Restaurant Review by its id
-      description: Update Restaurant Review by its id
-      parameters:
-        - name: id
-          in: path
-          description: ID of Restaurant Review to update
-          required: true
-          schema:
-            type: number
-            format: number
-      requestBody:
-        description: The Restaurant Review JSON you want to post
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RestaurantReviews"
-        required: true
-      responses:
-        "200":
-          description: Restaurant Review updated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RestaurantReviews"
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - http: []
-      x-codegen-request-body-name: body
-    delete:
-      tags:
-        - Restaurant Reviews
-      summary: Delete Restaurant Review
-      description: Deletes a single Restaurant Review based on the ID
-      parameters:
-        - name: id
-          in: path
-          description: ID of Restaurant Review to delete
-          required: true
-          schema:
-            type: number
-            format: number
-      responses:
-        "200":
-          description: Restaurant Review deleted
-          content: {}
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - http: []
-  /reviews_for_all_restaurant:
-    get:
-      tags:
-        - Restaurant Reviews
-      summary: Fetch all Restaurant Reviews
-      description: Returns all Restaurant Reviews from the system
-      parameters:
-        - name: filter
-          in: query
-          description: Filter Restaurant Reviews
-          schema:
-            type: string
-            format: string
-        - name: searchField
-          in: query
-          description: search field of id 
-          schema:
-            type: string
-            format: string
-        - name: searchString
-          in: query
-          description: search string of id
-          schema:
-            type: string
-            format: string
-        - name: offset
-          in: query
-          schema:
-            type: number
-            format: number
-        - name: limit
-          in: query
-          schema:
-            type: number
-            format: number
-      responses:
-        "200":
-          description: Fetched Restaurant Reviews
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RestaurantReviews"
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - http: []
-  /reviews_for_single_restaurant/{id}:  
-    get:
-      tags:
-        - Restaurant Reviews
-      summary: Fetch single Restaurant Review
-      description: Returns a single Restaurant Review based on a single ID
-      parameters:
-        - name: id
-          in: path
-          description: Restaurant ID
-          required: true
-          schema:
-            type: number
-            format: number
-      responses:
-        "200":
-          description: Fetched Restaurant Review
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RestaurantReviews"
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - http: []
-    
-
 # Components
 components:
   schemas:
@@ -2274,30 +2274,6 @@ components:
         photos:
           type: array
           description: A list of restaurant profile attachments.
-          items:
-            type: object
-            properties:
-              image:
-                type: string
-                description: The filename of the image.
-                example: "cons3.jpg"
-    RestaurantReviews:
-      type: object
-      properties:
-        class:
-          type: string
-          example: "Restaurant"
-        foreign_id:
-          type: number
-        user_id:
-          type: number
-        rating:
-          type: number
-        description:
-          type: string
-        photos:
-          type: array
-          description: A list of restaurant review attachments.
           items:
             type: object
             properties:
@@ -2404,7 +2380,6 @@ components:
                 type: string
                 description: The filename of the image.
                 example: "cons3.jpg"
-
     Items:
       type: object
       properties:
@@ -2643,6 +2618,30 @@ components:
                       type: string
                       description: The filename of the image.
                       example: "doc1.jpg"
+    RestaurantReviews:
+      type: object
+      properties:
+        class:
+          type: string
+          example: "Restaurant"
+        foreign_id:
+          type: number
+        user_id:
+          type: number
+        rating:
+          type: number
+        description:
+          type: string
+        photos:
+          type: array
+          description: A list of restaurant review attachments.
+          items:
+            type: object
+            properties:
+              image:
+                type: string
+                description: The filename of the image.
+                example: "cons3.jpg"
     Roles:
       type: object
       properties:
