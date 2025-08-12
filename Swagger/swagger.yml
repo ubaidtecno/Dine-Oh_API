@@ -776,6 +776,159 @@ paths:
       security:
         - http: []
 
+  /items:
+    get:
+      summary: Fetch all items
+      description: Returns all items from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter items
+          required: false
+          type: string
+          format: string
+        - name: q
+          in: query
+          description: Keywords to search
+          required: false
+          type: string
+          format: string
+        - in: query
+          name: latitude
+        - in: query
+          name: longitude
+        - in: query
+          name: radius
+        - in: query
+          name: limit
+          type: integer
+        - in: query
+          name: offset
+          type: integer
+      tags:
+        - Item
+      responses:
+        200:
+          description: Fetched items
+          schema:
+            $ref: "#/definitions/Items"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: "#/definitions/Error"
+    post:
+      tags:
+        - Item
+      summary: Creates a new item
+      description: Creates a new item
+      requestBody:
+        description: The item JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/addItem"
+        required: true
+      responses:
+        "200":
+          description: New item added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Items"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /items/{id}:
+    get:
+      tags:
+        - Item
+      summary: Fetch all items
+      description: Returns all items from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter item
+          required: false
+          type: string
+          format: string
+        - name: id
+          in: path
+          description: ID of item to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Fetched Item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Items"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      tags:
+        - Item
+      summary: Update item by its id
+      description: Update item by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of influencer to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The item JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/addItem"
+        required: true
+      responses:
+        "200":
+          description: Item updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Items"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags:
+        - Item
+      summary: Delete item
+      description: Deletes a single item based on the ID supplied
+      parameters:
+        - name: id
+          in: path
+          description: ID of item to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Item deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   # Restaurant Module
   /restaurants:
     get:
@@ -1890,6 +2043,114 @@ components:
                 type: string
                 description: The filename of the image.
                 example: "cons3.jpg"
+    addItem:
+      type: object
+      properties:
+        s_no:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: integer
+          format: int32
+        restaurant_id:
+          type: integer
+          format: int64
+        menu_name:
+          type: string
+        rating_count:
+          type: integer
+          format: int32
+        rating_avg:
+          type: integer
+          format: int32
+        is_veg:
+          type: boolean
+        is_special:
+          type: boolean
+        menu_type:
+          type: string
+        is_active:
+          type: boolean
+        variations:
+          type: string
+        attributes:
+          type: array
+          description: List of item attributes.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+              variation_id:
+                type: integer
+                format: int64
+              value:
+                type: string
+              price:
+                type: number
+                format: double
+        item_add_ons:
+          type: array
+          description: A list of item addons.
+          items:
+            type: object
+            properties:
+              price:
+                type: number
+                format: double
+              name:
+                type: string
+              type_id:
+                type: number
+        photos:
+          type: array
+          description: A list of item photo attachments.
+          items:
+            type: object
+            properties:
+              image:
+                type: string
+                description: The filename of the image.
+                example: "cons3.jpg"
+
+    Items:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: integer
+          format: int32
+        restaurant_id:
+          type: integer
+          format: int64
+        menu_id:
+          type: integer
+          format: int64
+        rating_count:
+          type: integer
+          format: int32
+        rating_avg:
+          type: integer
+          format: int32
+        is_veg:
+          type: boolean
+        is_special:
+          type: boolean
+        menu_type:
+          type: string
+        is_active:
+          type: boolean
     Restaurants:
       type: object
       properties:
