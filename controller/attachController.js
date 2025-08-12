@@ -32,12 +32,14 @@ let tempFileStore = (req, res) => {
   }
   const tempPath = req.file.path;
 
+  let orgFileExt = path.extname(req.file.originalname).toLowerCase();
+
   let tempName = req.file.originalname;
 
   const targetPath = path.join(__dirname, "../temp/" + tempName);
   console.log("images path", tempPath, targetPath);
 
-  if (isAllowedExt(tempName)) {
+  if (isAllowedExt(orgFileExt)) {
     fs.rename(tempPath, targetPath, (err) => {
       res.status(200).json(
         resjson(
