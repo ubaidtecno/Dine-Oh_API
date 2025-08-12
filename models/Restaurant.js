@@ -58,10 +58,10 @@ module.exports = db.sequelize.define(
       defaultValue: null,
     },
     latitude: {
-      type: Sequelize.DOUBLE,
+      type: Sequelize.STRING,
     },
     longitude: {
-      type: Sequelize.DOUBLE,
+      type: Sequelize.STRING,
     },
     location: {
       type: Sequelize.STRING,

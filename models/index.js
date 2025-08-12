@@ -1,3 +1,6 @@
+const User = require("./User");
+const WorkingDays = require("./WorkingDays");
+const Review = require("./Review");
 const Attach = require("./Attachment");
 const Banner = require("./Banner");
 const GoogleResPhoto = require("./GoogleResPhoto");
@@ -8,7 +11,6 @@ const Permission = require("./Permission");
 const Roles = require("./Roles");
 const Restaurant = require("./Restaurant");
 const RestaurantOwner = require("./RestaurantOwner");
-const User = require("./User");
 
 Banner.hasOne(Attach, {
   foreignKey: "foreign_id",
@@ -41,7 +43,18 @@ GoogleRestaurant.hasMany(GoogleResReview, {
   as: "reviews",
 });
 
+Restaurant.hasMany(WorkingDays, {
+  foreignKey: "restaurant_id",
+  constraints: false,
+});
+Review.belongsTo(User, { foreignKey: "user_id", constraints: false });
+Review.belongsTo(Restaurant, { foreignKey: "foreign_id", constraints: false });
+
 module.exports = {
+  User,
+  Restaurant,
+  WorkingDays,
+  Review,
   Attach,
   Banner,
   GoogleResPhoto,

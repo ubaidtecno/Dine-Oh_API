@@ -2,7 +2,15 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
 // Load models
-const { Restaurant, Attach } = require("../models");
+const {
+  Restaurant,
+  Attach,
+  WorkingDays,
+  GoogleResPhoto,
+  GoogleRestaurant,
+
+  GoogleResReview,
+} = require("../models");
 const resjson = require("../core/resjson");
 const { sequelize } = require("../config/db");
 const attach = require("./attachController");
@@ -56,6 +64,62 @@ let getAllRestaurant = async (req, res) => {
           ],
         };
         break;
+      case "cuisines":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { cuisines: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
+      case "rating":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { rating: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
+      case "latitude":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { latitude: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
+      case "longitude":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { longitude: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
+      case "location":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { location: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
+      case "zipcode":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { zipcode: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
+      case "price_level":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { price_level: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
     }
   } else if (
     searchString !== "" &&
@@ -69,6 +133,13 @@ let getAllRestaurant = async (req, res) => {
           [Op.or]: [
             { id: { [Op.like]: `%${searchString}%` } },
             { name: { [Op.like]: `%${searchString}%` } },
+            { cuisines: { [Op.like]: `%${searchString}%` } },
+            { rating: { [Op.like]: `%${searchString}%` } },
+            { latitude: { [Op.like]: `%${searchString}%` } },
+            { longitude: { [Op.like]: `%${searchString}%` } },
+            { location: { [Op.like]: `%${searchString}%` } },
+            { zipcode: { [Op.like]: `%${searchString}%` } },
+            { price_level: { [Op.like]: `%${searchString}%` } },
           ],
         },
       ],
@@ -109,6 +180,10 @@ const getRestaurant = async (req, res) => {
           where: { class: "Restaurant_Photo" },
           required: false,
         },
+        {
+          model: WorkingDays,
+          required: false,
+        },
       ],
     });
 
@@ -130,17 +205,19 @@ let createRestaurant = async (req, res) => {
 
     const newrestaurant = await Restaurant.create(req.body);
 
-    if (
-      req.body.documents !== undefined &&
-      req.body.documents !== null &&
-      req.body.documents.length > 0
-    ) {
-      let isStored = await attach.multiFileStore(
-        "Restaurant_Fssai_Doc",
-        req.body.documents,
-        newrestaurant.id,
-        false
-      );
+    if (req.body.working_days !== null && req.body.working_days !== undefined) {
+      for (let i = 0; i < req.body.working_days.length; i++) {
+        await WorkingDays.create({
+          restaurant_id: newrestaurant.id,
+          day: req.body.working_days[i].day,
+          starting_time: req.body.working_days[i].starting_time,
+          ending_time: req.body.working_days[i].ending_time,
+        })
+          .then()
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     }
 
     // Attachments for Restaurant
@@ -186,19 +263,30 @@ let updateRestaurant = async (req, res) => {
       where: { id },
     });
 
-    if (
-      req.body.documents !== undefined &&
-      req.body.documents !== null &&
-      req.body.documents.length > 0
-    ) {
-      let isStored = await attach.multiFileStore(
-        "Restaurant_Fssai_Doc",
-        req.body.documents,
-        id,
-        false
-      );
+    if (req.body.working_days !== null && req.body.working_days !== undefined) {
+      await WorkingDays.destroy({
+        where: { restaurant_id: req.params.id },
+      })
+        .then(async () => {
+          for (let i = 0; i < req.body.working_days.length; i++) {
+            await WorkingDays.create({
+              restaurant_id: req.params.id,
+              day: req.body.working_days[i].day,
+              starting_time: req.body.working_days[i].starting_time,
+              ending_time: req.body.working_days[i].ending_time,
+            })
+              .then()
+              .catch((err) => {
+                console.log(err);
+              });
+          }
+        })
+        .catch((err) => {
+          console.log("delete working days", err);
+        });
     }
 
+    // Attachments for Profile
     if (
       req.body.profile_photo !== undefined &&
       req.body.profile_photo !== null &&
@@ -247,6 +335,10 @@ let updateRestaurant = async (req, res) => {
             where: { class: "Restaurant_Photo" },
             required: false,
           },
+          {
+            model: WorkingDays,
+            required: false,
+          },
         ],
       });
 
@@ -280,6 +372,7 @@ let deleteRestaurant = async (req, res) => {
         foreign_id: id,
       },
     });
+    await WorkingDays.destroy({ where: { restaurant_id: id } });
 
     const resp = await Restaurant.destroy({ where: { id } });
 

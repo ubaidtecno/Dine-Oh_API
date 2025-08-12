@@ -1921,18 +1921,37 @@ components:
         country:
           type: string
         latitude:
-          type: double
+          type: string
         longitude:
-          type: double
+          type: string
         location:
           type: string
         zipcode:
           type: string
-        password:
-          type: string
-        is_verified:
-          type: boolean
-          default: false
+        working_days:
+          type: array
+          items:
+            type: object
+            properties:
+              day:
+                type: string
+                enum: 
+                  - Monday
+                  - Tuesday
+                  - Wednesday
+                  - Thursday
+                  - Friday
+                  - Saturday
+                  - Sunday
+                example: "Monday"
+              starting_time:
+                type: string
+                format: time
+                example: "10:00:00"
+              ending_time:
+                type: string
+                format: time
+                example: "22:00:00"  
         profile_photo:
           type: array
           description: A list of restaurant profile attachments.
