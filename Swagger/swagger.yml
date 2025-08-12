@@ -816,6 +816,8 @@ paths:
           description: Unexpected error
           schema:
             $ref: "#/definitions/Error"
+      security:
+        - http: []  
     post:
       tags:
         - Item
@@ -841,6 +843,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
   /items/{id}:
     get:
       tags:
@@ -873,6 +878,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+      security:
+        - http: []  
     put:
       tags:
         - Item
@@ -906,6 +913,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body          
     delete:
       tags:
         - Item
@@ -928,7 +938,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
+      security:
+        - http: []
+        
   # Restaurant Module
   /restaurants:
     get:
