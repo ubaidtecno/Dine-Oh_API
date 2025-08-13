@@ -14,6 +14,9 @@ const {
   getUserId,
   updateUser,
   deleteUser,
+  googleAuth,
+  googleCallback,
+  googleSilentLogin,
 } = require("../controller/authController");
 
 const { auth } = require("../middleware/auth");
@@ -31,5 +34,9 @@ router.get("/users", auth, getAllUser);
 router.get("/users/:id", auth, getUserId);
 router.put("/users/:id", auth, updateUser);
 router.delete("/users/:id", auth, deleteUser);
+
+router.get("/auth/google", googleAuth);
+router.post("/auth/google/login", googleSilentLogin);
+router.get("/auth/google/callback", googleCallback);
 
 module.exports = router;
