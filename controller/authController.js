@@ -11,6 +11,10 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
 
+const FACEBOOK_CLIENT_ID = process.env.FACEBOOK_CLIENT_ID;
+const FACEBOOK_CLIENT_SECRET = process.env.FACEBOOK_CLIENT_SECRET;
+const FACEBOOK_REDIRECT_URI = process.env.FACEBOOK_REDIRECT_URI;
+
 const otpMessageTemplate = (otp) => `Your OTP for Dine-Oh app is ${otp}. 
 
 Thank you, 
@@ -208,7 +212,30 @@ const googleCallback = async (req, res) => {
     const token = jwt.sign({ id: user.id }, secretOrKey, { expiresIn: "7d" });
 
     // Return token or redirect
-    res.json({ token, data: user });
+    // res.json({ token, data: user });
+
+    // Send HTML page
+    res.send(`
+    <html>
+      <head>
+        <title>Google Calendar Auth</title>
+        <style>
+          body { font-family: sans-serif; text-align: center; margin-top: 100px; }
+        </style>
+      </head>
+      <body>
+        <h2>✅ Google authorization successful!</h2>
+        <p>You can now close this window and return to the app.</p>
+
+        <script>
+          // Optional: Notify mobile app via postMessage
+          if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage("google_auth_success");
+          }
+        </script>
+      </body>
+    </html>
+  `);
   } catch (err) {
     console.error("Google callback error:", err.response?.data || err.message);
     res.status(500).json({ error: "Failed to authenticate with Google" });
@@ -269,6 +296,137 @@ const googleSilentLogin = async (req, res) => {
   } catch (err) {
     console.error("Silent login error:", err.response?.data || err.message);
     return res.status(500).json({ error: "Silent login failed" });
+  }
+};
+
+// Step 1: Redirect user to Facebook OAuth consent screen
+const facebookAuth = (req, res) => {
+  const scope = ["email", "public_profile"].join(",");
+
+  const authUrl = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${FACEBOOK_CLIENT_ID}&redirect_uri=${encodeURIComponent(
+    FACEBOOK_REDIRECT_URI
+  )}&state=fb_auth&scope=${encodeURIComponent(scope)}&response_type=code`;
+
+  res.redirect(authUrl);
+};
+
+// Step 2: Handle callback, exchange code for tokens, get profile
+const facebookCallback = async (req, res) => {
+  const code = req.query.code;
+  if (!code) {
+    return res.status(400).json({ error: "No code provided" });
+  }
+
+  try {
+    // Exchange code for access token
+    const tokenRes = await axios.get(
+      `https://graph.facebook.com/v20.0/oauth/access_token?client_id=${FACEBOOK_CLIENT_ID}&redirect_uri=${encodeURIComponent(
+        FACEBOOK_REDIRECT_URI
+      )}&client_secret=${FACEBOOK_CLIENT_SECRET}&code=${code}`
+    );
+
+    const { access_token, token_type, expires_in } = tokenRes.data;
+
+    // Get user profile from Facebook
+    const profileRes = await axios.get(
+      `https://graph.facebook.com/me?fields=id,name,email,picture.width(400).height(400)&access_token=${access_token}`
+    );
+
+    const { id, email, name, picture } = profileRes.data;
+
+    // Find or create user in DB
+    let user = await User.findOne({ where: { email } });
+    if (!user) {
+      user = await User.create({
+        first_name: name,
+        email,
+        provider: "facebook",
+        provider_id: id,
+        access_token,
+        refresh_token: null, // Facebook doesn't issue refresh tokens
+        role_id: 2,
+        expiry_date: Date.now() + expires_in * 1000,
+      });
+    } else {
+      await User.update({ access_token }, { where: { email } });
+    }
+
+    // Generate our own JWT
+    const token = jwt.sign({ id: user.id }, secretOrKey, { expiresIn: "7d" });
+
+    // Send HTML page (same style as Google)
+    res.send(`
+    <html>
+      <head>
+        <title>Facebook Auth</title>
+        <style>
+          body { font-family: sans-serif; text-align: center; margin-top: 100px; }
+        </style>
+      </head>
+      <body>
+        <h2>✅ Facebook authorization successful!</h2>
+        <p>You can now close this window and return to the app.</p>
+
+        <script>
+          if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage("facebook_auth_success");
+          }
+        </script>
+      </body>
+    </html>
+    `);
+  } catch (err) {
+    console.error(
+      "Facebook callback error:",
+      err.response?.data || err.message
+    );
+    return res
+      .status(500)
+      .json({ error: "Failed to authenticate with Facebook" });
+  }
+};
+
+// Step 3: Silent Login for Facebook
+const facebookSilentLogin = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email ID is required" });
+    }
+
+    const user = await User.findOne({ where: { email } });
+
+    if (!user || user.provider !== "facebook") {
+      return res.status(404).json({ error: "Facebook user not found" });
+    }
+
+    // Facebook tokens cannot be refreshed like Google’s,
+    // but you can extend them to a long-lived token
+    // Check expiry (optional)
+    // if (Date.now() >= user.expiry_date) {
+    //   console.warn("Facebook access token expired, re-authentication required");
+    //   return res.status(401).json({ error: "Facebook token expired" });
+    // }
+
+    // Verify with Facebook Graph API
+    const profileRes = await axios.get(
+      `https://graph.facebook.com/me?fields=id,name,email,picture.width(400).height(400)&access_token=${user.access_token}`
+    );
+
+    const profile = profileRes.data;
+
+    // Issue new JWT for your app
+    const appToken = jwt.sign({ id: user.id }, secretOrKey, {
+      expiresIn: "7d",
+    });
+
+    return res.json({ token: appToken, data: user, facebook_profile: profile });
+  } catch (err) {
+    console.error("Facebook login error:", err.response?.data || err.message);
+    return res
+      .status(500)
+      .json({ error: "Failed to authenticate with Facebook" });
   }
 };
 
@@ -594,4 +752,7 @@ module.exports = {
   googleAuth,
   googleCallback,
   googleSilentLogin,
+  facebookAuth,
+  facebookCallback,
+  facebookSilentLogin,
 };
