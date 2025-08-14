@@ -313,7 +313,9 @@ const facebookAuth = (req, res) => {
 
   const authUrl = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${FACEBOOK_CLIENT_ID}&redirect_uri=${encodeURIComponent(
     FACEBOOK_REDIRECT_URI
-  )}&state=fb_auth&scope=${encodeURIComponent(scope)}&response_type=code`;
+  )}&state=fb_auth&scope=${encodeURIComponent(
+    scope
+  )}&response_type=code&auth_type=reauthenticate`;
 
   // res.redirect(authUrl);
   return res.json({ success: true, authUrl });
