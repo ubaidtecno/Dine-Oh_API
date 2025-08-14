@@ -1976,6 +1976,58 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
       x-codegen-request-body-name: body
+  /auth/google:
+    get:
+      tags:
+        - User
+      summary: Google Signup 
+      description: Signup a new user in Google Authentication
+      
+      responses:
+        "200":
+          description: New user added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /auth/google/login:
+    post:
+      tags:
+        - User
+      summary: Dino Oh Google login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: test@gmail.com
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      x-codegen-request-body-name: body
   /forgot_password:
     post:
       tags:

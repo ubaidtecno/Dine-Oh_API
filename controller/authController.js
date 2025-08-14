@@ -158,7 +158,8 @@ const googleAuth = (req, res) => {
     scope
   )}&access_type=offline&prompt=consent`;
 
-  res.redirect(authUrl);
+  // res.redirect(authUrl);
+  return res.json({ success: true, authUrl });
 };
 
 // Step 2: Handle callback, exchange code for tokens, get profile
@@ -292,7 +293,14 @@ const googleSilentLogin = async (req, res) => {
       expiresIn: "7d",
     });
 
-    return res.json({ token: appToken, data: user, google_profile: profile });
+    // remove password and last otp
+    const customValues = _.omit(user.dataValues, ["password", "last_otp"]);
+
+    return res.json({
+      token: appToken,
+      data: customValues,
+      google_profile: profile,
+    });
   } catch (err) {
     console.error("Silent login error:", err.response?.data || err.message);
     return res.status(500).json({ error: "Silent login failed" });
@@ -307,7 +315,8 @@ const facebookAuth = (req, res) => {
     FACEBOOK_REDIRECT_URI
   )}&state=fb_auth&scope=${encodeURIComponent(scope)}&response_type=code`;
 
-  res.redirect(authUrl);
+  // res.redirect(authUrl);
+  return res.json({ success: true, authUrl });
 };
 
 // Step 2: Handle callback, exchange code for tokens, get profile
@@ -420,8 +429,14 @@ const facebookSilentLogin = async (req, res) => {
     const appToken = jwt.sign({ id: user.id }, secretOrKey, {
       expiresIn: "7d",
     });
+    // remove password and last otp
+    const customValues = _.omit(user.dataValues, ["password", "last_otp"]);
 
-    return res.json({ token: appToken, data: user, facebook_profile: profile });
+    return res.json({
+      token: appToken,
+      data: customValues,
+      facebook_profile: profile,
+    });
   } catch (err) {
     console.error("Facebook login error:", err.response?.data || err.message);
     return res
