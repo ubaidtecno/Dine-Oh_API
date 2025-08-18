@@ -223,27 +223,30 @@ const googleCallback = async (req, res) => {
     // res.json({ token, data: user });
 
     // Send HTML page
-    res.send(`
-    <html>
-      <head>
-        <title>Google Calendar Auth</title>
-        <style>
-          body { font-family: sans-serif; text-align: center; margin-top: 100px; }
-        </style>
-      </head>
-      <body>
-        <h2>✅ Google authorization successful!</h2>
-        <p>You can now close this window and return to the app.</p>
+    //   res.send(`
+    //   <html>
+    //     <head>
+    //       <title>Google Calendar Auth</title>
+    //       <style>
+    //         body { font-family: sans-serif; text-align: center; margin-top: 100px; }
+    //       </style>
+    //     </head>
+    //     <body>
+    //       <h2>✅ Google authorization successful!</h2>
+    //       <p>You can now close this window and return to the app.</p>
 
-        <script>
-          // Optional: Notify mobile app via postMessage
-          if (window.ReactNativeWebView) {
-            window.ReactNativeWebView.postMessage("google_auth_success");
-          }
-        </script>
-      </body>
-    </html>
-  `);
+    //       <script>
+    //         // Optional: Notify mobile app via postMessage
+    //         if (window.ReactNativeWebView) {
+    //           window.ReactNativeWebView.postMessage("google_auth_success");
+    //         }
+    //       </script>
+    //     </body>
+    //   </html>
+    // `);
+
+    // Check if this request came from mobile (optional, or just always redirect)
+    res.redirect(`dineoh://auth/callback?token=${token}`);
   } catch (err) {
     console.error("Google callback error:", err.response?.data || err.message);
     res.status(500).json({ error: "Failed to authenticate with Google" });
@@ -376,26 +379,29 @@ const facebookCallback = async (req, res) => {
     const token = jwt.sign({ id: user.id }, secretOrKey, { expiresIn: "7d" });
 
     // Send HTML page (same style as Google)
-    res.send(`
-    <html>
-      <head>
-        <title>Facebook Auth</title>
-        <style>
-          body { font-family: sans-serif; text-align: center; margin-top: 100px; }
-        </style>
-      </head>
-      <body>
-        <h2>✅ Facebook authorization successful!</h2>
-        <p>You can now close this window and return to the app.</p>
+    // res.send(`
+    // <html>
+    //   <head>
+    //     <title>Facebook Auth</title>
+    //     <style>
+    //       body { font-family: sans-serif; text-align: center; margin-top: 100px; }
+    //     </style>
+    //   </head>
+    //   <body>
+    //     <h2>✅ Facebook authorization successful!</h2>
+    //     <p>You can now close this window and return to the app.</p>
 
-        <script>
-          if (window.ReactNativeWebView) {
-            window.ReactNativeWebView.postMessage("facebook_auth_success");
-          }
-        </script>
-      </body>
-    </html>
-    `);
+    //     <script>
+    //       if (window.ReactNativeWebView) {
+    //         window.ReactNativeWebView.postMessage("facebook_auth_success");
+    //       }
+    //     </script>
+    //   </body>
+    // </html>
+    // `);
+
+    // Check if this request came from mobile (optional, or just always redirect)
+    res.redirect(`dineoh://auth/callback?token=${token}`);
   } catch (err) {
     console.error(
       "Facebook callback error:",
