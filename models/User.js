@@ -39,6 +39,21 @@ module.exports = db.sequelize.define(
     last_otp: {
       type: Sequelize.STRING,
     },
+    provider: {
+      type: Sequelize.STRING,
+    },
+    provider_id: {
+      type: Sequelize.STRING,
+    },
+    access_token: {
+      type: Sequelize.TEXT,
+    },
+    refresh_token: {
+      type: Sequelize.TEXT,
+    },
+    expiry_date: {
+      type: Sequelize.BIGINT,
+    },
     is_verified: {
       type: Sequelize.TINYINT,
     },
