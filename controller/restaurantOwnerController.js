@@ -293,24 +293,71 @@ let createRestaurantOwner = async (req, res) => {
 
 let updateRestaurantOwner = async (req, res) => {
   const { id } = req.params;
+  const { is_verified } = req.body;
+
   try {
-    const [result] = await RestaurantOwner.update(req.body, {
+    // Update record
+    const [updatedCount] = await RestaurantOwner.update(req.body, {
       where: { id },
     });
 
-    if (result > 0) {
-      const restaurant = await RestaurantOwner.findOne({
-        where: { id },
-      });
-
-      return res.json(
-        resjson(restaurant, "Restaurant profile was updated", "")
-      );
-    } else {
+    if (updatedCount === 0) {
       return res
         .status(404)
         .json(resjson("", "Restaurant profile not found", "", 1));
     }
+
+    // Fetch updated restaurant owner
+    const restaurantOwner = await RestaurantOwner.findOne({ where: { id } });
+
+    if (!restaurantOwner) {
+      return res
+        .status(404)
+        .json(resjson("", "Restaurant profile not found", "", 1));
+    }
+
+    // Send verification email only if is_verified is true and email exists
+    if (is_verified && restaurantOwner.email) {
+      const subject = `DineOh Restaurant Application - Verification Successful`;
+
+      await sendMail(
+        restaurantOwner.email,
+        ``,
+        `<body>
+          <div
+             style="
+             width: 90%;
+             max-width: 90%;
+             padding: 15px;
+             background: #b9bcbcff;
+             border: 5px solid #e77f4eff;
+             margin: auto;
+             font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+             border-radius: 18px;">
+  
+            Dear Sir,
+            <br /><br />
+            Welcome to Dine Oh Application! Your account has been verified. Now you can access the Restaurant Application.
+            <br /><br />
+            If you have any issues or need assistance please email us at 
+            <a href="mailto:${process.env.SUPPORT_EMAIL}" target="_blank">${process.env.SUPPORT_EMAIL}</a>
+            <br /><br />
+            Sincerely,
+            <br />
+            The Dine Oh Team.
+            <br /><br />
+          </div>
+        </body>`,
+        ``,
+        ``,
+        ``,
+        subject
+      );
+    }
+
+    return res.json(
+      resjson(restaurantOwner, "Restaurant profile was updated", "")
+    );
   } catch (err) {
     console.error(err);
     return res.status(500).json(resjson("", "Internal Server Error", "", 1));

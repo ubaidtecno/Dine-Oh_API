@@ -17,6 +17,176 @@ servers:
     description: Local Host
 
 paths:
+  # AddOn Module
+  /add_ons:
+    get:
+      tags:
+        - AddOn
+      summary: Fetch all add ons
+      description: Returns all add ons from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter add ons
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and date
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and date
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched add ons
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddOns"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - AddOn
+      summary: Creates a new add on
+      description: Creates a new add on
+      requestBody:
+        description: The addon JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddOns"
+        required: true
+      responses:
+        "200":
+          description: New addon added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddOns"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /add_ons/{id}:
+    get:
+      tags:
+        - AddOn
+      summary: Fetch add on
+      description: Returns a add on based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of addon to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched addon
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddOns"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - AddOn
+      summary: Update add on by its id
+      description: Update add on by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of addon to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The addon JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddOns"
+        required: true
+      responses:
+        "200":
+          description: AddOn updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddOns"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - AddOn
+      summary: Delete add on
+      description: Deletes a single add on based on the ID supplied
+      parameters:
+        - name: id
+          in: path
+          description: ID of addon to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: addon deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
   # Attachment Module
   /attachments:
     get:
@@ -315,7 +485,7 @@ paths:
         required: true
       responses:
         "200":
-          description: Influencer updated
+          description: Banner updated
           content:
             application/json:
               schema:
@@ -345,6 +515,686 @@ paths:
       responses:
         "200":
           description: banner deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
+  # Cuisine Module
+  /cuisines:
+    get:
+      tags:
+        - Cuisine
+      summary: Fetch all cuisines
+      description: Returns all cuisines from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter banners
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and date
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and date
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched cuisine
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cuisines"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - Cuisine
+      summary: Creates a new cuisine
+      description: Creates a new cuisine
+      requestBody:
+        description: The banner JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Cuisines"
+        required: true
+      responses:
+        "200":
+          description: New banner added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cuisines"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /cuisines/{id}:
+    get:
+      tags:
+        - Cuisine
+      summary: Fetch cuisine
+      description: Returns a cuisine based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of cuisine to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched cuisine
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cuisines"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - Cuisine
+      summary: Update cuisine by its id
+      description: Update cuisine by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of cuisine to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The cuisine JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Cuisines"
+        required: true
+      responses:
+        "200":
+          description: Cuisine updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cuisines"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - Cuisine
+      summary: Delete cuisine
+      description: Deletes a single cuisine based on the ID supplied
+      parameters:
+        - name: id
+          in: path
+          description: ID of cuisine to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: cuisine deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
+  # DealType Module
+  /deals:
+    get:
+      tags:
+        - Deal
+      summary: Fetch all deals
+      description: Returns all deals from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter deals
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and date
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and date
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched deals
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deals"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - Deal
+      summary: Creates a new deal
+      description: Creates a new deal
+      requestBody:
+        description: The deal JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Deals"
+        required: true
+      responses:
+        "200":
+          description: New deal added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deals"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /deals/{id}:
+    get:
+      tags:
+        - Deal
+      summary: Fetch deal
+      description: Returns a deal based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of deal to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched deal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deals"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - Deal
+      summary: Update deal by its id
+      description: Update deal by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of deal to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The deal JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Deals"
+        required: true
+      responses:
+        "200":
+          description: Deal updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deals"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - Deal
+      summary: Delete deal
+      description: Deletes a single deal based on the ID supplied
+      parameters:
+        - name: id
+          in: path
+          description: ID of deal to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: deal deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
+  # DealType Module
+  /deal_types:
+    get:
+      tags:
+        - DealType
+      summary: Fetch all deal types
+      description: Returns all deal types from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter deal types
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and date
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and date
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched deal types
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DealTypes"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - DealType
+      summary: Creates a new deal type
+      description: Creates a new deal type
+      requestBody:
+        description: The deal type JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DealTypes"
+        required: true
+      responses:
+        "200":
+          description: New deal type added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DealTypes"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /deal_types/{id}:
+    get:
+      tags:
+        - DealType
+      summary: Fetch deal type
+      description: Returns a deal type based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of deal type to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched deal type
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DealTypes"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - DealType
+      summary: Update deal type by its id
+      description: Update deal type by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of deal type to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The deal type JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DealTypes"
+        required: true
+      responses:
+        "200":
+          description: Deal Type updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DealTypes"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - DealType
+      summary: Delete deal type
+      description: Deletes a single deal type based on the ID supplied
+      parameters:
+        - name: id
+          in: path
+          description: ID of deal type to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: deal type deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
+  # Favourite Module
+  /favourites:
+    get:
+      tags:
+        - Favourite
+      summary: Fetch all favourites
+      description: Returns all favourites from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter cuisines
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and date
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and date
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched favourites
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Favourites"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - Favourite
+      summary: Creates a new favourite
+      description: Creates a new favourite
+      requestBody:
+        description: The favourite JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Favourites"
+        required: true
+      responses:
+        "200":
+          description: New favourite added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Favourites"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /favourites/{id}:
+    get:
+      tags:
+        - Favourite
+      summary: Fetch favourite
+      description: Returns a favourite based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of favourite to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched favourite
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Favourites"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - Favourite
+      summary: Update favourite by its id
+      description: Update favourite by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of favourite to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The favourite JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Favourites"
+        required: true
+      responses:
+        "200":
+          description: Favourite updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Favourites"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - Favourite
+      summary: Delete favourite
+      description: Deletes a single favourite based on the ID supplied
+      parameters:
+        - name: id
+          in: path
+          description: ID of favourite to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: favourite deleted
           content: {}
         default:
           description: Unexpected error
@@ -776,6 +1626,7 @@ paths:
       security:
         - http: []
 
+  # Item Module
   /items:
     get:
       summary: Fetch all items
@@ -817,7 +1668,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
       security:
-        - http: []  
+        - http: []
     post:
       tags:
         - Item
@@ -879,7 +1730,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
       security:
-        - http: []  
+        - http: []
     put:
       tags:
         - Item
@@ -915,7 +1766,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - http: []
-      x-codegen-request-body-name: body          
+      x-codegen-request-body-name: body
     delete:
       tags:
         - Item
@@ -931,6 +1782,346 @@ paths:
       responses:
         "200":
           description: Item deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
+  # ItemType Module
+  /item_types:
+    get:
+      tags:
+        - ItemType
+      summary: Fetch all item types
+      description: Returns all item types from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter item types
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and date
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and date
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched item types
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemTypes"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - ItemType
+      summary: Creates a new item type
+      description: Creates a new item type
+      requestBody:
+        description: The item type JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemTypes"
+        required: true
+      responses:
+        "200":
+          description: New item type added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemTypes"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /item_types/{id}:
+    get:
+      tags:
+        - ItemType
+      summary: Fetch item type
+      description: Returns a item type based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of item type to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched item type
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemTypes"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - ItemType
+      summary: Update item type by its id
+      description: Update item type by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of item type to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The item type JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemTypes"
+        required: true
+      responses:
+        "200":
+          description: Item Type updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemTypes"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - ItemType
+      summary: Delete item type
+      description: Deletes a single item type based on the ID supplied
+      parameters:
+        - name: id
+          in: path
+          description: ID of item type to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: item type deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
+  # Menu Module
+  /menus:
+    get:
+      tags:
+        - Menu
+      summary: Fetch all menus
+      description: Returns all menus from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter menus
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and date
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and date
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched menus
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menus"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - Menu
+      summary: Creates a new menu
+      description: Creates a new menu
+      requestBody:
+        description: The menu JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Menus"
+        required: true
+      responses:
+        "200":
+          description: New menu added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menus"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /menus/{id}:
+    get:
+      tags:
+        - Menu
+      summary: Fetch menu
+      description: Returns a menu based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of menu to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched menu
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menus"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - Menu
+      summary: Update menu by its id
+      description: Update menu by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of menu to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The menu JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Menus"
+        required: true
+      responses:
+        "200":
+          description: Menu updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menus"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - Menu
+      summary: Delete menu
+      description: Deletes a single menu based on the ID supplied
+      parameters:
+        - name: id
+          in: path
+          description: ID of menu to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: menu deleted
           content: {}
         default:
           description: Unexpected error
@@ -1464,8 +2655,8 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - http: []
- 
-   # Review Module
+
+    # Review Module
 
   # Reviews
   /reviews:
@@ -1483,7 +2674,7 @@ paths:
             format: string
         - name: searchField
           in: query
-          description: search field of id 
+          description: search field of id
           schema:
             type: string
             format: string
@@ -1651,7 +2842,7 @@ paths:
             format: string
         - name: searchField
           in: query
-          description: search field of id 
+          description: search field of id
           schema:
             type: string
             format: string
@@ -1686,7 +2877,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - http: []
-  /reviews_for_single_restaurant/{id}:  
+  /reviews_for_single_restaurant/{id}:
     get:
       tags:
         - Restaurant Reviews
@@ -1715,7 +2906,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - http: []
-    
+
   # Roles
   /roles:
     get:
@@ -2248,6 +3439,19 @@ paths:
 # Components
 components:
   schemas:
+    AddOns:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: double
+        is_active:
+          type: boolean
+          default: true
     Attachments:
       type: object
       properties:
@@ -2281,6 +3485,79 @@ components:
                 type: string
                 description: The filename of the image.
                 example: "cons3.jpg"
+    Cuisines:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        is_active:
+          type: boolean
+          default: true
+    Deals:
+      type: object
+      properties:
+        restaurant_id:
+          type: integer
+          format: int64
+        deal_type_id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+        is_pre_booking:
+          type: boolean
+          default: false
+        is_walk_in:
+          type: boolean
+          default: false
+        is_both:
+          type: boolean
+          default: false
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        time_slot:
+          type: string
+        min_spend:
+          type: string
+        active_days:
+          type: string
+        photos:
+          type: array
+          description: A list of deal photo attachments.
+          items:
+            type: object
+            properties:
+              image:
+                type: string
+                description: The filename of the image.
+                example: "cons3.jpg"
+    DealTypes:
+      type: object
+      properties:
+        name:
+          type: string
+        is_active:
+          type: boolean
+          default: true
+    Favourites:
+      type: object
+      properties:
+        class:
+          type: string
+        foreign_id:
+          type: integer
+          format: int64
+        user_id:
+          type: integer
+          format: int64
     Influencers:
       type: object
       properties:
@@ -2407,12 +3684,33 @@ components:
           format: int32
         is_veg:
           type: boolean
+          default: false
         is_special:
           type: boolean
+          default: false
         menu_type:
           type: string
         is_active:
           type: boolean
+          default: true
+    ItemTypes:
+      type: object
+      properties:
+        name:
+          type: string
+        is_active:
+          type: boolean
+          default: true
+    Menus:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        is_active:
+          type: boolean
+          default: true
     Restaurants:
       type: object
       properties:
@@ -2458,7 +3756,7 @@ components:
             properties:
               day:
                 type: string
-                enum: 
+                enum:
                   - Monday
                   - Tuesday
                   - Wednesday
@@ -2474,7 +3772,7 @@ components:
               ending_time:
                 type: string
                 format: time
-                example: "22:00:00"  
+                example: "22:00:00"
         profile_photo:
           type: array
           description: A list of restaurant profile attachments.
@@ -2647,13 +3945,9 @@ components:
       properties:
         name:
           type: string
-        isActive:
+        is_active:
           type: boolean
-          format: boolean
-        created_at:
-          type: string
-        updated_at:
-          type: string
+          default: true
     Users:
       type: object
       properties:

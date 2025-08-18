@@ -6,9 +6,15 @@ const {
   Restaurant,
   Attach,
   WorkingDays,
+  RestaurantCuisine,
+  Cuisine,
+  Item,
+  ItemAddOns,
+  AddOns,
+  Menu,
+  Favourite,
   GoogleResPhoto,
   GoogleRestaurant,
-
   GoogleResReview,
 } = require("../models");
 const resjson = require("../core/resjson");
@@ -17,7 +23,6 @@ const attach = require("./attachController");
 const _ = require("lodash");
 
 // Controller function
-
 let getAllRestaurant = async (req, res) => {
   let filter = req.query.filter;
   filter === undefined
@@ -158,6 +163,7 @@ let getAllRestaurant = async (req, res) => {
 // Retrieve single
 const getRestaurant = async (req, res) => {
   try {
+    let userId = req.user.id;
     const { id } = req.params;
     const restaurant = await Restaurant.findOne({
       where: { id },
@@ -184,6 +190,33 @@ const getRestaurant = async (req, res) => {
           model: WorkingDays,
           required: false,
         },
+        {
+          model: RestaurantCuisine,
+          required: false,
+          include: { model: Cuisine, required: false },
+        },
+        {
+          model: Item,
+          required: false,
+          where: { is_active: true },
+          include: [
+            { model: Attach, required: false, where: { class: "Item" } },
+            {
+              model: Menu,
+              required: false,
+            },
+            {
+              model: ItemAddOns,
+              required: false,
+              include: { model: AddOns, required: false },
+            },
+          ],
+        },
+        {
+          model: Favourite,
+          required: false,
+          where: { class: "Restaurant", user_id: userId },
+        },
       ],
     });
 
@@ -204,6 +237,19 @@ let createRestaurant = async (req, res) => {
     transaction = await sequelize.transaction();
 
     const newrestaurant = await Restaurant.create(req.body);
+
+    if (req.body.cuisine !== null && req.body.cuisine !== undefined) {
+      for (let i = 0; i < req.body.cuisine.length; i++) {
+        RestaurantCuisine.create({
+          restaurant_id: newrestaurant.id,
+          cuisine_id: req.body.cuisine[i].id,
+        })
+          .then()
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    }
 
     if (req.body.working_days !== null && req.body.working_days !== undefined) {
       for (let i = 0; i < req.body.working_days.length; i++) {
@@ -262,6 +308,27 @@ let updateRestaurant = async (req, res) => {
     const [result] = await Restaurant.update(req.body, {
       where: { id },
     });
+
+    if (req.body.cuisine !== null && req.body.cuisine !== undefined) {
+      RestaurantCuisine.destroy({
+        where: { restaurant_id: result.id },
+      })
+        .then(async () => {
+          for (let i = 0; i < req.body.cuisine.length; i++) {
+            await RestaurantCuisine.create({
+              restaurant_id: result.id,
+              cuisine_id: req.body.cuisine[i].id,
+            })
+              .then(() => {})
+              .catch((err) => {
+                console.log(err);
+              });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
 
     if (req.body.working_days !== null && req.body.working_days !== undefined) {
       await WorkingDays.destroy({
@@ -339,6 +406,28 @@ let updateRestaurant = async (req, res) => {
             model: WorkingDays,
             required: false,
           },
+          {
+            model: RestaurantCuisine,
+            required: false,
+            include: { model: Cuisine, required: false },
+          },
+          {
+            model: Item,
+            required: false,
+            where: { is_active: true },
+            include: [
+              { model: Attach, required: false, where: { class: "Item" } },
+              {
+                model: Menu,
+                required: false,
+              },
+              {
+                model: ItemAddOns,
+                required: false,
+                include: { model: AddOns, required: false },
+              },
+            ],
+          },
         ],
       });
 
@@ -372,6 +461,7 @@ let deleteRestaurant = async (req, res) => {
         foreign_id: id,
       },
     });
+    await RestaurantCuisine.destroy({ where: { restaurant_id: id } });
     await WorkingDays.destroy({ where: { restaurant_id: id } });
 
     const resp = await Restaurant.destroy({ where: { id } });

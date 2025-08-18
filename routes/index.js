@@ -7,6 +7,9 @@ const attribute = require("./masterTable.js/attributeRoutes");
 const authRoutes = require("./authRoutes");
 const banner = require("./bannerRoutes");
 const cussine = require("./masterTable.js/cussineRoutes");
+const dealType = require("./dealRoutes");
+const deal = require("./masterTable.js/dealTypeRoutes");
+const favourite = require("./favouriteRoutes");
 const googleRestaurant = require("./googleRestaurantRoutes");
 const influencer = require("./influencerRoutes");
 const item = require("./itemRoutes");
@@ -25,6 +28,9 @@ router.use(
   authRoutes,
   banner,
   cussine,
+  deal,
+  dealType,
+  favourite,
   googleRestaurant,
   influencer,
   item,

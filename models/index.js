@@ -3,7 +3,10 @@ const Attach = require("./Attachment");
 const Attribute = require("./masterTable/Attribute");
 const Banner = require("./Banner");
 // const Crust = require("./masterTable/Crust");
-const Cussines = require("./masterTable/Cussines");
+const Cuisines = require("./masterTable/Cuisines");
+const Deal = require("./Deal");
+const DealType = require("./masterTable/DealType");
+const Favourite = require("./Favourite");
 const GoogleResPhoto = require("./GoogleResPhoto");
 const GoogleResReview = require("./GoogleResReview");
 const GoogleRestaurant = require("./GoogleRestaurant");
@@ -19,6 +22,7 @@ const Menu = require("./masterTable/Menu");
 const Permission = require("./Permission");
 const Roles = require("./Roles");
 const Restaurant = require("./Restaurant");
+const RestaurantCuisine = require("./RestaurantCuisine");
 const RestaurantOwner = require("./RestaurantOwner");
 const Review = require("./Review");
 // const Size = require("./masterTable/Size");
@@ -28,6 +32,28 @@ const User = require("./User");
 Banner.hasOne(Attach, {
   foreignKey: "foreign_id",
   as: "banners",
+});
+Deal.hasOne(Attach, {
+  foreignKey: "foreign_id",
+  as: "deals",
+});
+Deal.belongsTo(DealType, { foreignKey: "deal_type_id" });
+Deal.belongsTo(Restaurant, { foreignKey: "restaurant_id" });
+Favourite.belongsTo(Restaurant, {
+  foreignKey: "foreign_id",
+  constraints: false,
+});
+Favourite.belongsTo(Item, {
+  foreignKey: "foreign_id",
+  constraints: false,
+});
+GoogleRestaurant.hasMany(GoogleResPhoto, {
+  foreignKey: "google_restaurant_id",
+  as: "photos",
+});
+GoogleRestaurant.hasMany(GoogleResReview, {
+  foreignKey: "google_restaurant_id",
+  as: "reviews",
 });
 Influencer.hasOne(Attach, {
   foreignKey: "foreign_id",
@@ -42,7 +68,6 @@ ItemAddOns.belongsTo(AddOns, { foreignKey: "add_ons_id" });
 ItemAddOns.belongsTo(ItemType, { foreignKey: "type_id" });
 ItemAttribute.belongsTo(ItemVariation, { foreignKey: "variation_id" });
 ItemAttribute.belongsTo(Attribute, { foreignKey: "attribute_id" });
-
 Restaurant.hasOne(Attach, {
   foreignKey: "foreign_id",
   as: "restaurant_profile_photo",
@@ -55,17 +80,19 @@ Restaurant.hasMany(Attach, {
   foreignKey: "foreign_id",
   as: "restaurant_fssai_doc",
 });
-User.belongsTo(Roles, { foreignKey: "role_id" });
-
-GoogleRestaurant.hasMany(GoogleResPhoto, {
-  foreignKey: "google_restaurant_id",
-  as: "photos",
+Restaurant.hasMany(RestaurantCuisine, {
+  foreignKey: "restaurant_id",
+  constraints: false,
 });
-GoogleRestaurant.hasMany(GoogleResReview, {
-  foreignKey: "google_restaurant_id",
-  as: "reviews",
+Restaurant.hasMany(Item, {
+  foreignKey: "restaurant_id",
+  constraints: false,
 });
-
+Restaurant.hasOne(Favourite, { foreignKey: "foreign_id", constraints: false });
+RestaurantCuisine.belongsTo(Cuisines, {
+  foreignKey: "cuisine_id",
+  constraints: false,
+});
 Restaurant.hasMany(WorkingDays, {
   foreignKey: "restaurant_id",
   constraints: false,
@@ -76,6 +103,7 @@ Review.hasMany(Attach, {
   foreignKey: "foreign_id",
   as: "restaurant_review_photos",
 });
+User.belongsTo(Roles, { foreignKey: "role_id" });
 
 module.exports = {
   AddOns,
@@ -83,7 +111,10 @@ module.exports = {
   Attribute,
   Banner,
   // Crust,
-  Cussines,
+  Cuisines,
+  Deal,
+  DealType,
+  Favourite,
   GoogleResPhoto,
   GoogleResReview,
   GoogleRestaurant,
@@ -99,6 +130,7 @@ module.exports = {
   Permission,
   Roles,
   Restaurant,
+  RestaurantCuisine,
   RestaurantOwner,
   Review,
   // Size,
