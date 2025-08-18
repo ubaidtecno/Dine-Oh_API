@@ -179,7 +179,7 @@ const googleCallback = async (req, res) => {
       grant_type: "authorization_code",
     });
 
-    const { access_token, id_token, refresh_token } = tokenRes.data;
+    const { access_token, id_token, refresh_token, expires_in } = tokenRes.data;
 
     // Get user info from Google
     const profileRes = await axios.get(
@@ -206,7 +206,14 @@ const googleCallback = async (req, res) => {
       });
     } else {
       // Update latest tokens
-      await User.update({ access_token, refresh_token }, { where: { email } });
+      await User.update(
+        {
+          access_token,
+          refresh_token,
+          expiry_date: Date.now() + expires_in * 1000,
+        },
+        { where: { email } }
+      );
     }
 
     // Generate our own JWT
@@ -359,7 +366,10 @@ const facebookCallback = async (req, res) => {
         expiry_date: Date.now() + expires_in * 1000,
       });
     } else {
-      await User.update({ access_token }, { where: { email } });
+      await User.update(
+        { access_token, expiry_date: Date.now() + expires_in * 1000 },
+        { where: { email } }
+      );
     }
 
     // Generate our own JWT
