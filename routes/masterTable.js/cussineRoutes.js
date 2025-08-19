@@ -11,14 +11,14 @@ const {
 
 const { auth } = require("../../middleware/auth");
 
-router.get("/cussines", auth, getAllCussines);
+router.get("/cuisines", auth, getAllCussines);
 
-router.get("/cussines/:id", auth, getCussine);
+router.get("/cuisines/:id", auth, getCussine);
 
-router.post("/cussines", auth, createCussine);
+router.post("/cuisines", auth, createCussine);
 
-router.put("/cussines/:id", auth, updateCussine);
+router.put("/cuisines/:id", auth, updateCussine);
 
-router.delete("/cussines/:id", auth, deleteCussine);
+router.delete("/cuisines/:id", auth, deleteCussine);
 
 module.exports = router;
