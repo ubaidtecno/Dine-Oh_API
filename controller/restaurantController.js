@@ -7,7 +7,7 @@ const {
   Attach,
   WorkingDays,
   RestaurantCuisine,
-  Cuisine,
+  Cuisines,
   Item,
   ItemAddOns,
   AddOns,
@@ -193,7 +193,7 @@ const getRestaurant = async (req, res) => {
         {
           model: RestaurantCuisine,
           required: false,
-          include: { model: Cuisine, required: false },
+          include: { model: Cuisines, required: false },
         },
         {
           model: Item,
@@ -409,7 +409,7 @@ let updateRestaurant = async (req, res) => {
           {
             model: RestaurantCuisine,
             required: false,
-            include: { model: Cuisine, required: false },
+            include: { model: Cuisines, required: false },
           },
           {
             model: Item,
