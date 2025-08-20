@@ -48,7 +48,7 @@ let getAllRestaurant = async (req, res) => {
       },
       {
         model: RestaurantCuisine,
-        required: true,
+        required: false,
         where: filter.inCuisine,
         include: { model: Cuisines, required: false },
       },
