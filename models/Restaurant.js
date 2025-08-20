@@ -12,9 +12,6 @@ module.exports = db.sequelize.define(
     restaurant_owner_id: {
       type: Sequelize.BIGINT,
     },
-    cuisine_id: {
-      type: Sequelize.BIGINT,
-    },
     name: {
       type: Sequelize.STRING,
     },
