@@ -3853,6 +3853,13 @@ components:
           type: string
         zipcode:
           type: string
+        cuisine:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
         working_days:
           type: array
           items:
@@ -3990,6 +3997,13 @@ components:
                 type: string
               zipcode:
                 type: string
+              cuisine:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
               profile_photo:
                 type: array
                 description: A list of restaurant profile attachments.

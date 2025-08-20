@@ -7,7 +7,7 @@ const {
   Attach,
   WorkingDays,
   RestaurantCuisine,
-  Cuisine,
+  Cuisines,
   Item,
   ItemAddOns,
   AddOns,
@@ -46,6 +46,12 @@ let getAllRestaurant = async (req, res) => {
         where: { class: "Restaurant_Profile_Photo" },
         required: false,
       },
+      {
+        model: RestaurantCuisine,
+        required: true,
+        where: filter.inCuisine,
+        include: { model: Cuisines, required: false },
+      },
     ],
     order: [[`${sortField}`, `${sortOrder}`]],
     limit,
@@ -66,14 +72,6 @@ let getAllRestaurant = async (req, res) => {
           [Op.and]: [
             filter.where,
             { name: { [Op.like]: `%${searchString}%` } },
-          ],
-        };
-        break;
-      case "cuisines":
-        obj.where = {
-          [Op.and]: [
-            filter.where,
-            { cuisines: { [Op.like]: `%${searchString}%` } },
           ],
         };
         break;
@@ -193,7 +191,7 @@ const getRestaurant = async (req, res) => {
         {
           model: RestaurantCuisine,
           required: false,
-          include: { model: Cuisine, required: false },
+          include: { model: Cuisines, required: false },
         },
         {
           model: Item,
