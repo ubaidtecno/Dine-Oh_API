@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
 // Load models
-const { Cussines } = require("../models");
+const { Cuisines } = require("../models");
 const resjson = require("../core/resjson");
 
 let getAllCussines = async (req, res) => {
@@ -63,7 +63,7 @@ let getAllCussines = async (req, res) => {
   }
 
   try {
-    let cussines = await Cussines.findAndCountAll(obj);
+    let cussines = await Cuisines.findAndCountAll(obj);
     return res.json(resjson(cussines, "", "", 0));
   } catch (err) {
     console.log(err);
@@ -75,7 +75,7 @@ let getAllCussines = async (req, res) => {
 const getCussine = async (req, res) => {
   try {
     const { id } = req.params;
-    const cussine = await Cussines.findOne({
+    const cussine = await Cuisines.findOne({
       where: { id },
     });
 
@@ -92,7 +92,7 @@ const getCussine = async (req, res) => {
 
 let createCussine = async (req, res) => {
   try {
-    const newcussine = await Cussines.create(req.body);
+    const newcussine = await Cuisines.create(req.body);
 
     return res.json(resjson(newcussine, "Cussine was created", ""));
   } catch (err) {
@@ -104,12 +104,12 @@ let createCussine = async (req, res) => {
 let updateCussine = async (req, res) => {
   const { id } = req.params;
   try {
-    const [result] = await Cussines.update(req.body, {
+    const [result] = await Cuisines.update(req.body, {
       where: { id },
     });
 
     if (result > 0) {
-      const cussine = await Cussines.findOne({
+      const cussine = await Cuisines.findOne({
         where: { id },
       });
 
@@ -127,11 +127,13 @@ let deleteCussine = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const cussine = await Cussines.findByPk(id);
+    let cussine = await Cuisines.findByPk(id);
 
     if (!cussine) {
       return res.status(404).json(resjson("", "Cussine not found", "", 1));
     }
+
+    cussine = await Cuisines.destroy({ where: { id } });
 
     return res.json(resjson(cussine, "Cussine was deleted", "", 0));
   } catch (err) {

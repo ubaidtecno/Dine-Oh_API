@@ -407,7 +407,7 @@ let updateRestaurant = async (req, res) => {
           {
             model: RestaurantCuisine,
             required: false,
-            include: { model: Cuisine, required: false },
+            include: { model: Cuisines, required: false },
           },
           {
             model: Item,
