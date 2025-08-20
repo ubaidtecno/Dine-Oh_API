@@ -2146,6 +2146,12 @@ paths:
           schema:
             type: string
             format: string
+        - name: cuisineId
+          in: query
+          description: cuisineId of id
+          schema:
+             type: number
+             format: number
         - name: searchField
           in: query
           description: search field of id and date

@@ -37,6 +37,8 @@ let getAllRestaurant = async (req, res) => {
   let sortField = req.query.sortField ? req.query.sortField : "id";
   let sortOrder = req.query.sortField ? req.query.sortOrder : "ASC";
 
+  let cuisineId = req.query.cuisineId ? parseInt(req.query.cuisineId) : null;
+
   let obj = {
     where: filter.where,
     include: [
@@ -48,9 +50,15 @@ let getAllRestaurant = async (req, res) => {
       },
       {
         model: RestaurantCuisine,
-        required: false,
-        where: filter.inCuisine,
-        include: { model: Cuisines, required: false },
+        as: "restaurant_cuisines", // make sure this matches your association alias
+        required: !!cuisineId, // inner join if cuisineId is provided
+        where: cuisineId ? { cuisine_id: cuisineId } : undefined, // 👈 fix here
+        include: [
+          {
+            model: Cuisines,
+            required: false,
+          },
+        ],
       },
     ],
     order: [[`${sortField}`, `${sortOrder}`]],
