@@ -146,7 +146,7 @@ const youtubeCallback = async (req, res) => {
     if (!user) {
       user = await Influencer.create({
         email,
-        user,
+        name,
         user_name: snippet?.customUrl,
         provider: "youtube",
         channel_id: channelId,
