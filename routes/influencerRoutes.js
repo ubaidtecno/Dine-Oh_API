@@ -13,6 +13,9 @@ const {
   forgotPassword,
   verifyOtp,
   setPassword,
+  youtubeAuth,
+  youtubeSilentLogin,
+  youtubeCallback,
 } = require("../controller/influencerController");
 
 const { auth } = require("../middleware/auth");
@@ -38,5 +41,9 @@ router.post("/influencers", createInfluencer);
 router.put("/influencers/:id", auth, updateInfluencer);
 
 router.delete("/influencers/:id", auth, deleteInfluencer);
+
+router.get("/auth/youtube", youtubeAuth);
+router.post("/auth/youtube/login", youtubeSilentLogin);
+router.get("/auth/youtube/callback", youtubeCallback);
 
 module.exports = router;

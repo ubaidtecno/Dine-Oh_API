@@ -30,6 +30,31 @@ module.exports = db.sequelize.define(
     last_otp: {
       type: Sequelize.STRING,
     },
+    provider: {
+      type: Sequelize.STRING,
+    },
+    access_token: {
+      type: Sequelize.TEXT,
+    },
+    refresh_token: {
+      type: Sequelize.TEXT,
+    },
+    expiry_date: {
+      type: Sequelize.BIGINT,
+    },
+    channel_id: {
+      type: Sequelize.STRING,
+    },
+    channel_title: {
+      type: Sequelize.STRING,
+    },
+    subscribers: {
+      type: Sequelize.BIGINT,
+    },
+    is_influencer: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
     is_verified: {
       type: Sequelize.TINYINT,
     },

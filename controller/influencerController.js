@@ -11,6 +11,11 @@ const { sequelize } = require("../config/db");
 const attach = require("../controller/attachController");
 const sendMail = require("../core/sendEmail");
 const _ = require("lodash");
+const axios = require("axios");
+
+const YOUTUBE_CLIENT_ID = process.env.YOUTUBE_CLIENT_ID;
+const YOUTUBE_CLIENT_SECRET = process.env.YOUTUBE_CLIENT_SECRET;
+const YOUTUBE_REDIRECT_URI = process.env.YOUTUBE_REDIRECT_URI;
 
 // Controller function
 const Login = async (req, res) => {
@@ -81,6 +86,213 @@ const SignUp = async (req, res) => {
       console.log(err);
       return res.status(400).json(resjson("", "Something Went wrong", "", 1));
     });
+};
+
+const youtubeAuth = async (req, res) => {
+  const scope = [
+    "openid",
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
+    "https://www.googleapis.com/auth/youtube.readonly", // 👈 YouTube scope
+  ].join(" ");
+
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${YOUTUBE_CLIENT_ID}&redirect_uri=${encodeURIComponent(
+    YOUTUBE_REDIRECT_URI
+  )}&response_type=code&scope=${encodeURIComponent(
+    scope
+  )}&access_type=offline&prompt=consent`;
+
+  return res.json({ success: true, authUrl });
+};
+
+const youtubeCallback = async (req, res) => {
+  const code = req.query.code;
+  if (!code) return res.status(400).json({ error: "No code provided" });
+
+  try {
+    // Exchange code for tokens
+    const tokenRes = await axios.post("https://oauth2.googleapis.com/token", {
+      code,
+      client_id: YOUTUBE_CLIENT_ID,
+      client_secret: YOUTUBE_CLIENT_SECRET,
+      redirect_uri: YOUTUBE_REDIRECT_URI,
+      grant_type: "authorization_code",
+    });
+
+    const { access_token, refresh_token, expires_in, id_token } = tokenRes.data;
+
+    const profileRes = await axios.get(
+      "https://www.googleapis.com/oauth2/v2/userinfo",
+      { headers: { Authorization: `Bearer ${access_token}` } }
+    );
+    const { email, name } = profileRes.data;
+
+    // Get YouTube channel info
+    const ytRes = await axios.get(
+      "https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true",
+      { headers: { Authorization: `Bearer ${access_token}` } }
+    );
+
+    const channel = ytRes.data.items[0]; // influencer’s main channel
+    const { id: channelId, snippet, statistics } = channel;
+
+    const subscriberCount = parseInt(statistics?.subscriberCount || "0", 10);
+
+    //  influencer logic (threshold = 5000, you can adjust)
+    const isInfluencer = subscriberCount >= 5000;
+
+    // Store in DB (adjust based on schema)
+    let user = await Influencer.findOne({ where: { channel_id: channelId } });
+    if (!user) {
+      user = await Influencer.create({
+        email,
+        name,
+        provider: "youtube",
+        channel_id: channelId,
+        channel_title: snippet?.title,
+        subscribers: subscriberCount,
+        is_influencer: isInfluencer,
+        access_token,
+        refresh_token,
+        expiry_date: Date.now() + expires_in * 1000,
+      });
+    } else {
+      await Influencer.update(
+        {
+          email,
+          name,
+          provider: "youtube",
+          channel_id: channelId,
+          channel_title: snippet?.title,
+          access_token,
+          refresh_token,
+          expiry_date: Date.now() + expires_in * 1000,
+          subscribers: subscriberCount,
+          is_influencer: isInfluencer,
+        },
+        { where: { channel_id: channelId } }
+      );
+    }
+
+    // Issue app token
+    const appToken = jwt.sign({ id: user.id }, secretOrKey, {
+      expiresIn: "7d",
+    });
+
+    // return res.redirect(`dineoh://auth/callback?token=${appToken}`);
+
+    return res.json({
+      success: true,
+      token: appToken,
+      youtube_channel: {
+        id: channelId,
+        title: snippet.title,
+        description: snippet.description,
+        subscribers: statistics.subscriberCount,
+        thumbnails: snippet.thumbnails,
+      },
+    });
+  } catch (err) {
+    console.error("YouTube OAuth error:", err.response?.data || err.message);
+    return res.status(500).json({ error: "Failed to connect YouTube" });
+  }
+};
+
+const youtubeSilentLogin = async (req, res) => {
+  try {
+    const { email } = req.body; // or from JWT/session in your app
+
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    // Find user in DB
+    const user = await Influencer.findOne({
+      where: { email, provider: "youtube" },
+    });
+    if (!user) {
+      return res.status(404).json({ error: "YouTube user not found" });
+    }
+
+    let accessToken = user.access_token;
+
+    // 1️⃣ Refresh token if expired
+    if (Date.now() >= user.expiry_date) {
+      const refreshRes = await axios.post(
+        "https://oauth2.googleapis.com/token",
+        {
+          client_id: process.env.YOUTUBE_CLIENT_ID,
+          client_secret: process.env.YOUTUBE_CLIENT_SECRET,
+          refresh_token: user.refresh_token,
+          grant_type: "refresh_token",
+        }
+      );
+
+      accessToken = refreshRes.data.access_token;
+
+      await Influencer.update(
+        {
+          access_token: accessToken,
+          expiry_date: Date.now() + refreshRes.data.expires_in * 1000,
+        },
+        { where: { email } }
+      );
+    }
+
+    // 2️⃣ Fetch latest YouTube channel info
+    const ytRes = await axios.get(
+      "https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true",
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+
+    const channel = ytRes.data.items[0];
+    const { id: channelId, snippet, statistics } = channel;
+    const subscriberCount = parseInt(statistics?.subscriberCount || "0", 10);
+
+    // 3️⃣ Update influencer status in DB
+    const isInfluencer = subscriberCount >= 5000;
+
+    await Influencer.update(
+      {
+        subscribers: subscriberCount,
+        is_influencer: isInfluencer,
+      },
+      { where: { channel_id: channelId } }
+    );
+
+    // 4️⃣ Issue new JWT for app
+    const appToken = jwt.sign({ id: user.id }, secretOrKey, {
+      expiresIn: "7d",
+    });
+
+    // Remove sensitive fields
+    const customValues = _.omit(user.dataValues, [
+      "password",
+      "last_otp",
+      "access_token",
+      "refresh_token",
+    ]);
+
+    return res.json({
+      success: true,
+      token: appToken,
+      data: customValues,
+      youtube_profile: {
+        id: channelId,
+        title: snippet.title,
+        description: snippet.description,
+        subscribers: subscriberCount,
+        is_influencer: isInfluencer,
+        thumbnails: snippet.thumbnails,
+      },
+    });
+  } catch (err) {
+    console.error(
+      "YouTube silent login error:",
+      err.response?.data || err.message
+    );
+    return res.status(500).json({ error: "Silent login failed" });
+  }
 };
 
 let getAllInfluencer = async (req, res) => {
@@ -497,4 +709,7 @@ module.exports = {
   forgotPassword,
   verifyOtp,
   setPassword,
+  youtubeAuth,
+  youtubeCallback,
+  youtubeSilentLogin,
 };

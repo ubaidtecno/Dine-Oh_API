@@ -198,7 +198,7 @@ const googleCallback = async (req, res) => {
         first_name: name,
         email,
         provider: "google",
-        providerId: id,
+        provider_id: id,
         access_token,
         refresh_token,
         role_id: 2,
@@ -208,6 +208,9 @@ const googleCallback = async (req, res) => {
       // Update latest tokens
       await User.update(
         {
+          first_name: name,
+          provider: "google",
+          provider_id: id,
           access_token,
           refresh_token,
           expiry_date: Date.now() + expires_in * 1000,
@@ -370,7 +373,13 @@ const facebookCallback = async (req, res) => {
       });
     } else {
       await User.update(
-        { access_token, expiry_date: Date.now() + expires_in * 1000 },
+        {
+          first_name: name,
+          provider: "facebook",
+          provider_id: id,
+          access_token,
+          expiry_date: Date.now() + expires_in * 1000,
+        },
         { where: { email } }
       );
     }
