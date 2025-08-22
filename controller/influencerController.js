@@ -139,7 +139,7 @@ const youtubeCallback = async (req, res) => {
     const subscriberCount = parseInt(statistics?.subscriberCount || "0", 10);
 
     //  influencer logic (threshold = 5000, you can adjust)
-    const isInfluencer = subscriberCount >= 5000;
+    const isInfluencer = subscriberCount >= 10000;
 
     // Store in DB (adjust based on schema)
     let user = await Influencer.findOne({ where: { channel_id: channelId } });
@@ -181,19 +181,19 @@ const youtubeCallback = async (req, res) => {
       expiresIn: "7d",
     });
 
-    // return res.redirect(`dineoh://auth/callback?token=${appToken}`);
+    return res.redirect(`dineoh://auth/callback?token=${appToken}`);
 
-    return res.json({
-      success: true,
-      token: appToken,
-      youtube_channel: {
-        id: channelId,
-        title: snippet.title,
-        description: snippet.description,
-        subscribers: statistics.subscriberCount,
-        thumbnails: snippet.thumbnails,
-      },
-    });
+    // return res.json({
+    //   success: true,
+    //   token: appToken,
+    //   youtube_profile: {
+    //     id: channelId,
+    //     title: snippet.title,
+    //     description: snippet.description,
+    //     subscribers: statistics.subscriberCount,
+    //     thumbnails: snippet.thumbnails,
+    //   },
+    // });
   } catch (err) {
     console.error("YouTube OAuth error:", err.response?.data || err.message);
     return res.status(500).json({ error: "Failed to connect YouTube" });
