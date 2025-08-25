@@ -479,10 +479,277 @@ let deleteRestaurant = async (req, res) => {
   }
 };
 
+let searchNearByRestaurant = async (req, res) => {
+  console.log(req.user.role_id);
+  //permission check
+  // if (![1, 2].includes(req.user.role_id)) {
+  //   return res
+  //     .status(422)
+  //     .json(resjson("", "you do not have permission", "", 1));
+  // }
+  // get user id from request
+
+  let userDataFromRequest = req.user;
+  let userId = userDataFromRequest.id;
+  let filter = req.query.filter;
+  filter === undefined
+    ? (filter = "")
+    : (filter = JSON.parse(req.query.filter));
+
+  let search = req.query.q;
+  search === undefined ? (search = "") : (search = req.query.q);
+  //  finding nearest restaurant
+  let serachLatt = req.query.latitude;
+  let searchLong = req.query.longitude;
+  let radius = req.query.radius;
+  let limit = req.query.limit ? parseInt(req.query.limit) : req.query.limit;
+  let offset = req.query.offset ? parseInt(req.query.offset) : req.query.offset;
+
+  radius === undefined || radius === null ? (radius = 80) : (radius = radius);
+  if (userDataFromRequest.role_id == 2) {
+    if (!_.isEmpty(serachLatt) && !_.isEmpty(searchLong)) {
+      let distance = Sequelize.literal(
+        "6371 * acos(cos(radians(" +
+          serachLatt +
+          ")) * cos(radians(latitude)) * cos(radians(" +
+          searchLong +
+          ") - radians(longitude)) + sin(radians(" +
+          serachLatt +
+          ")) * sin(radians(latitude)))"
+      );
+      Restaurant.findAll({
+        attributes: { include: [[distance, "distance"]] },
+        include: [
+          {
+            model: Attach,
+            as: "restaurant_fssai_doc",
+            where: { class: "Restaurant_Fssai_Doc" },
+            required: false,
+          },
+          {
+            model: Attach,
+            as: "restaurant_profile_photo",
+            where: { class: "Restaurant_Profile_Photo" },
+            required: false,
+          },
+          {
+            model: Attach,
+            as: "restaurant_photos",
+            where: { class: "Restaurant_Photo" },
+            required: false,
+          },
+          {
+            model: WorkingDays,
+            required: false,
+          },
+          {
+            model: RestaurantCuisine,
+            required: false,
+            include: { model: Cuisines, required: false },
+          },
+          {
+            model: Item,
+            required: false,
+            where: { is_active: true },
+            include: [
+              { model: Attach, required: false, where: { class: "Item" } },
+              {
+                model: Menu,
+                required: false,
+              },
+              {
+                model: ItemAddOns,
+                required: false,
+                include: { model: AddOns, required: false },
+              },
+            ],
+          },
+          {
+            model: Favourite,
+            required: false,
+            where: { class: "Restaurant", user_id: userId },
+          },
+        ],
+        where: {
+          [Op.and]: [
+            Sequelize.where(distance, { [Op.lte]: radius }),
+            {
+              [Op.and]: [filter.where, { name: { $like: "%" + search + "%" } }],
+            },
+          ],
+        },
+        offset,
+        limit,
+        order: Sequelize.literal("distance ASC"),
+        distinct: true,
+      })
+        .then((restaurant) => {
+          return res.json(resjson(restaurant, "", ""));
+        })
+        .catch((err) => {
+          console.log(err);
+          return res
+            .status(422)
+            .json(resjson("", "Something Went wrong", "", 1));
+        });
+    } else {
+      Restaurant.findAndCountAll({
+        where: {
+          [Op.and]: [filter.where, { name: { $like: "%" + search + "%" } }],
+        },
+        include: [
+          {
+            model: Attach,
+            as: "restaurant_fssai_doc",
+            where: { class: "Restaurant_Fssai_Doc" },
+            required: false,
+          },
+          {
+            model: Attach,
+            as: "restaurant_profile_photo",
+            where: { class: "Restaurant_Profile_Photo" },
+            required: false,
+          },
+          {
+            model: Attach,
+            as: "restaurant_photos",
+            where: { class: "Restaurant_Photo" },
+            required: false,
+          },
+          {
+            model: WorkingDays,
+            required: false,
+          },
+          {
+            model: RestaurantCuisine,
+            required: false,
+            include: { model: Cuisines, required: false },
+          },
+          {
+            model: Item,
+            required: false,
+            where: { is_active: true },
+            include: [
+              { model: Attach, required: false, where: { class: "Item" } },
+              {
+                model: Menu,
+                required: false,
+              },
+              {
+                model: ItemAddOns,
+                required: false,
+                include: { model: AddOns, required: false },
+              },
+            ],
+          },
+          {
+            model: Favourite,
+            required: false,
+            where: { class: "Restaurant", user_id: userId },
+          },
+        ],
+        offset,
+        limit,
+        order: [["id", "ASC"]],
+        distinct: true,
+      })
+        .then((restaurants) => {
+          /*  if (0 < restaurant.length) {
+          let customData = _.omit(restaurant, ["password"]);
+          return res.json(resjson(restaurants, "", ""));
+          } else {
+            res.status(404).json(resjson("", "Restaurant not found", "", 1));
+          } */
+
+          let response = {
+            ...{ count: restaurants.count },
+            ...resjson(restaurants.rows, "", ""),
+          };
+          return res.json(response);
+        })
+        .catch((err) => {
+          console.log(err);
+          return res
+            .status(422)
+            .json(resjson("", "Something Went wrong", "", 1));
+        });
+    }
+  } else if (userDataFromRequest.role_id != 2) {
+    console.log("role_id", userDataFromRequest.role_id);
+    Restaurant.findAndCountAll({
+      include: [
+        {
+          model: Attach,
+          as: "restaurant_fssai_doc",
+          where: { class: "Restaurant_Fssai_Doc" },
+          required: false,
+        },
+        {
+          model: Attach,
+          as: "restaurant_profile_photo",
+          where: { class: "Restaurant_Profile_Photo" },
+          required: false,
+        },
+        {
+          model: Attach,
+          as: "restaurant_photos",
+          where: { class: "Restaurant_Photo" },
+          required: false,
+        },
+        {
+          model: WorkingDays,
+          required: false,
+        },
+        {
+          model: RestaurantCuisine,
+          required: false,
+          include: { model: Cuisines, required: false },
+        },
+        {
+          model: Item,
+          required: false,
+          where: { is_active: true },
+          include: [
+            { model: Attach, required: false, where: { class: "Item" } },
+            {
+              model: Menu,
+              required: false,
+            },
+            {
+              model: ItemAddOns,
+              required: false,
+              include: { model: AddOns, required: false },
+            },
+          ],
+        },
+        {
+          model: Favourite,
+          required: false,
+          where: { class: "Restaurant", user_id: userId },
+        },
+      ],
+      where: {
+        [Op.and]: [filter.where, { name: { $like: "%" + search + "%" } }],
+      },
+      offset,
+      limit,
+      distinct: true,
+    })
+      .then((restaurant) => {
+        return res.json(resjson(restaurant, "", ""));
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(422).json(resjson("", "Something Went wrong", "", 1));
+      });
+  }
+};
+
 module.exports = {
   getAllRestaurant,
   getRestaurant,
   createRestaurant,
   updateRestaurant,
   deleteRestaurant,
+  searchNearByRestaurant,
 };

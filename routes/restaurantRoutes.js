@@ -7,11 +7,14 @@ const {
   createRestaurant,
   updateRestaurant,
   deleteRestaurant,
+  searchNearByRestaurant,
 } = require("../controller/restaurantController.js");
 
 const { auth } = require("../middleware/auth");
 
 router.get("/restaurants", auth, getAllRestaurant);
+
+router.get("/restaurants/nearest", auth, searchNearByRestaurant);
 
 router.get("/restaurants/:id", auth, getRestaurant);
 

@@ -2270,6 +2270,56 @@ paths:
       security:
         - http: []
       x-codegen-request-body-name: body
+  /restaurants/nearest:
+    get:
+      tags:
+        - Restaurant
+      summary: Fetch all near by restaurants
+      description: Returns all near by restaurants from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter restaurant
+          required: false
+          type: string
+          format: string
+        - name: q
+          in: query
+          description: Keywords to search
+          required: false
+          type: string
+          format: string
+        - in: query
+          name: latitude  
+        - in: query
+          name: longitude
+        - in: query
+          name: radius  
+        - in: query
+          name: limit 
+          type: integer 
+          format: int64
+        - in: query
+          name: offset  
+          type: integer
+          format: int64
+          
+      responses:
+        "200":
+          description: Fetched restaurants
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Restaurants"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+       
   /restaurants/{id}:
     get:
       tags:

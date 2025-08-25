@@ -181,19 +181,20 @@ const youtubeCallback = async (req, res) => {
       expiresIn: "7d",
     });
 
-    return res.redirect(`dineoh://auth/callback?token=${appToken}`);
+    // return res.redirect(`dineoh://auth/callback?token=${appToken}`);
 
-    // return res.json({
-    //   success: true,
-    //   token: appToken,
-    //   youtube_profile: {
-    //     id: channelId,
-    //     title: snippet.title,
-    //     description: snippet.description,
-    //     subscribers: statistics.subscriberCount,
-    //     thumbnails: snippet.thumbnails,
-    //   },
-    // });
+    return res.json({
+      success: true,
+      token: appToken,
+      data: user,
+      youtube_profile: {
+        id: channelId,
+        title: snippet.title,
+        description: snippet.description,
+        subscribers: statistics.subscriberCount,
+        thumbnails: snippet.thumbnails,
+      },
+    });
   } catch (err) {
     console.error("YouTube OAuth error:", err.response?.data || err.message);
     return res.status(500).json({ error: "Failed to connect YouTube" });
