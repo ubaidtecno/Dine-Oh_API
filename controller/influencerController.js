@@ -206,7 +206,7 @@ const youtubeCallback = async (req, res) => {
           </style>
         </head>
         <body>
-          <h2>✅ Google authorization successful!</h2>
+          <h2>✅ YouTube authorization successful!</h2>
           <p>You can now close this window and return to the app.</p>
 
           <script>
