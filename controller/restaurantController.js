@@ -517,7 +517,7 @@ let searchNearByRestaurant = async (req, res) => {
           serachLatt +
           ")) * sin(radians(latitude)))"
       );
-      Restaurant.findAll({
+      Restaurant.findAndCountAll({
         attributes: { include: [[distance, "distance"]] },
         include: [
           {
