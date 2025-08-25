@@ -183,18 +183,41 @@ const youtubeCallback = async (req, res) => {
 
     // return res.redirect(`dineoh://auth/callback?token=${appToken}`);
 
-    return res.json({
-      success: true,
-      token: appToken,
-      data: user,
-      youtube_profile: {
-        id: channelId,
-        title: snippet.title,
-        description: snippet.description,
-        subscribers: statistics.subscriberCount,
-        thumbnails: snippet.thumbnails,
-      },
-    });
+    // return res.json({
+    //   success: true,
+    //   token: appToken,
+    //   data: user,
+    //   youtube_profile: {
+    //     id: channelId,
+    //     title: snippet.title,
+    //     description: snippet.description,
+    //     subscribers: statistics.subscriberCount,
+    //     thumbnails: snippet.thumbnails,
+    //   },
+    // });
+
+    // Send HTML page
+    res.send(`
+      <html>
+        <head>
+          <title>Google Calendar Auth</title>
+          <style>
+            body { font-family: sans-serif; text-align: center; margin-top: 100px; }
+          </style>
+        </head>
+        <body>
+          <h2>✅ Google authorization successful!</h2>
+          <p>You can now close this window and return to the app.</p>
+
+          <script>
+            // Optional: Notify mobile app via postMessage
+            if (window.ReactNativeWebView) {
+              window.ReactNativeWebView.postMessage("google_auth_success");
+            }
+          </script>
+        </body>
+      </html>
+    `);
   } catch (err) {
     console.error("YouTube OAuth error:", err.response?.data || err.message);
     return res.status(500).json({ error: "Failed to connect YouTube" });
