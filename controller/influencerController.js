@@ -347,116 +347,109 @@ const youtubeSilentLogin = async (req, res) => {
 // </html>
 // `);
 
-// Step 1: Redirect to Instagram Auth
-const instagramAuth = (req, res) => {
-  const scope = ["instagram_basic", "pages_show_list"].join(",");
-  // instagram_basic → profile info
-  // pages_show_list → needed to link FB Page to IG Business account
+// Step 1: Instagram Auth URL
+const instagramAuth = async (req, res) => {
+  const scope = [
+    "instagram_basic",
+    "pages_show_list",
+    "pages_read_engagement",
+  ].join(",");
 
   const authUrl = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${encodeURIComponent(
     INSTAGRAM_REDIRECT_URI
-  )}&scope=${scope}&response_type=code`;
+  )}&scope=${encodeURIComponent(scope)}&response_type=code&state=ig_auth`;
 
   return res.json({ success: true, authUrl });
 };
 
-// Step 2: Callback – exchange code for access token
+// Step 2: Instagram Callback
 const instagramCallback = async (req, res) => {
   const code = req.query.code;
   if (!code) return res.status(400).json({ error: "No code provided" });
 
   try {
-    // 1️⃣ Exchange code for short-lived token
-    const tokenRes = await axios.post(
-      "https://api.instagram.com/oauth/access_token",
-      new URLSearchParams({
-        client_id: INSTAGRAM_CLIENT_ID,
-        client_secret: INSTAGRAM_CLIENT_SECRET,
-        grant_type: "authorization_code",
-        redirect_uri: INSTAGRAM_REDIRECT_URI,
-        code,
-      }),
-      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+    // 1️⃣ Exchange code for access token
+    const tokenRes = await axios.get(
+      `https://graph.facebook.com/v20.0/oauth/access_token?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${encodeURIComponent(
+        INSTAGRAM_REDIRECT_URI
+      )}&client_secret=${FACEBOOK_CLIENT_SECRET}&code=${code}`
     );
 
-    const { access_token, user_id } = tokenRes.data;
+    const { access_token } = tokenRes.data;
 
-    // 2️⃣ Upgrade to long-lived token
-    const longTokenRes = await axios.get(
-      `https://graph.instagram.com/access_token?grant_type=ig_exchange_token&client_secret=${INSTAGRAM_CLIENT_SECRET}&access_token=${access_token}`
-    );
-    const longLivedToken = longTokenRes.data.access_token;
-
-    // 3️⃣ Get Instagram basic profile
-    const profileRes = await axios.get(
-      `https://graph.instagram.com/${user_id}?fields=id,username&access_token=${longLivedToken}`
-    );
-
-    const { id: instaId, username } = profileRes.data;
-
-    // 4️⃣ Get follower count (needs Instagram Business + connected FB Page)
+    // 2️⃣ Get FB User (with pages)
     const fbUserRes = await axios.get(
-      `https://graph.facebook.com/v20.0/me/accounts?access_token=${longLivedToken}`
+      `https://graph.facebook.com/me?fields=id,name,email&access_token=${access_token}`
     );
-    const fbPageId = fbUserRes.data.data?.[0]?.id;
+    const { id: fbUserId, name, email } = fbUserRes.data;
 
-    if (!fbPageId) {
-      return res.status(400).json({
-        error:
-          "No connected Facebook Page found for Instagram Business account",
-      });
+    // 3️⃣ Get Pages linked to this FB account
+    const pagesRes = await axios.get(
+      `https://graph.facebook.com/me/accounts?access_token=${access_token}`
+    );
+
+    const pages = pagesRes.data?.data || [];
+    if (!pages.length) {
+      return res.status(400).json({ error: "No Facebook Page linked" });
     }
 
-    const instaBizRes = await axios.get(
-      `https://graph.facebook.com/v20.0/${fbPageId}?fields=instagram_business_account&access_token=${longLivedToken}`
+    // 4️⃣ Get Instagram Business account from the first Page
+    const pageAccessToken = pages[0].access_token;
+    const pageId = pages[0].id;
+
+    const igRes = await axios.get(
+      `https://graph.facebook.com/v20.0/${pageId}?fields=instagram_business_account&access_token=${pageAccessToken}`
     );
 
-    const instaBizId = instaBizRes.data.instagram_business_account?.id;
-
-    if (!instaBizId) {
-      return res.status(400).json({
-        error: "Instagram account is not a Business Account",
-      });
+    const igBusiness = igRes.data?.instagram_business_account;
+    if (!igBusiness) {
+      return res
+        .status(400)
+        .json({ error: "No Instagram business account found" });
     }
 
-    const statsRes = await axios.get(
-      `https://graph.facebook.com/v20.0/${instaBizId}?fields=username,followers_count,media_count&access_token=${longLivedToken}`
+    const instagramId = igBusiness.id;
+
+    // 5️⃣ Fetch Instagram profile
+    const igProfileRes = await axios.get(
+      `https://graph.facebook.com/v20.0/${instagramId}?fields=id,username,followers_count,profile_picture_url&access_token=${pageAccessToken}`
     );
 
-    const { followers_count, media_count } = statsRes.data;
+    const igProfile = igProfileRes.data;
 
-    // 5️⃣ Influencer logic (like YouTube subscribers)
-    const isInfluencer = followers_count >= 10000;
+    // ✅ influencer logic (example: threshold = 10k)
+    const isInfluencer = igProfile.followers_count >= 10000;
 
-    // 6️⃣ Save / update influencer in DB
-    let user = await Influencer.findOne({ where: { channel_id: instaBizId } });
+    // 6️⃣ Store or Update in DB
+    let user = await Influencer.findOne({ where: { channel_id: instagramId } });
     if (!user) {
       user = await Influencer.create({
-        email: null, // Instagram API doesn’t give email
-        name: username,
-        user_name: username,
+        email,
+        name,
+        user_name: igProfile.username,
         provider: "instagram",
-        channel_id: instaBizId,
-        channel_title: username,
-        subscribers: followers_count,
+        channel_id: instagramId,
+        channel_title: igProfile.username,
+        subscribers: igProfile.followers_count,
         is_influencer: isInfluencer,
-        access_token: longLivedToken,
-        refresh_token: null,
-        expiry_date: null,
+        access_token: pageAccessToken, // Save Page token (not short-lived user token)
+        expiry_date: Date.now() + 60 * 24 * 60 * 60 * 1000, // ~60 days
       });
     } else {
       await Influencer.update(
         {
-          name: username,
-          user_name: username,
+          email,
+          name,
+          user_name: igProfile.username,
           provider: "instagram",
-          channel_id: instaBizId,
-          channel_title: username,
-          subscribers: followers_count,
+          channel_id: instagramId,
+          channel_title: igProfile.username,
+          subscribers: igProfile.followers_count,
           is_influencer: isInfluencer,
-          access_token: longLivedToken,
+          access_token: pageAccessToken,
+          expiry_date: Date.now() + 60 * 24 * 60 * 60 * 1000,
         },
-        { where: { channel_id: instaBizId } }
+        { where: { channel_id: instagramId } }
       );
     }
 
@@ -465,18 +458,26 @@ const instagramCallback = async (req, res) => {
       expiresIn: "7d",
     });
 
-    // ✅ Response (same format as YouTube)
-    return res.json({
-      success: true,
-      token: appToken,
-      data: user,
-      instagram_profile: {
-        id: instaBizId,
-        username,
-        followers: followers_count,
-        media_count,
-      },
-    });
+    // Final HTML response
+    res.send(`
+      <html>
+        <head>
+          <title>Instagram Auth</title>
+          <style>
+            body { font-family: sans-serif; text-align: center; margin-top: 100px; }
+          </style>
+        </head>
+        <body>
+          <h2>✅ Instagram authorization successful!</h2>
+          <p>You can now close this window and return to the app.</p>
+          <script>
+            if (window.ReactNativeWebView) {
+              window.ReactNativeWebView.postMessage("instagram_auth_success");
+            }
+          </script>
+        </body>
+      </html>
+    `);
   } catch (err) {
     console.error("Instagram OAuth error:", err.response?.data || err.message);
     return res.status(500).json({ error: "Failed to connect Instagram" });
