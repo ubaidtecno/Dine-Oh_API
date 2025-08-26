@@ -17,6 +17,10 @@ const YOUTUBE_CLIENT_ID = process.env.YOUTUBE_CLIENT_ID;
 const YOUTUBE_CLIENT_SECRET = process.env.YOUTUBE_CLIENT_SECRET;
 const YOUTUBE_REDIRECT_URI = process.env.YOUTUBE_REDIRECT_URI;
 
+const INSTAGRAM_CLIENT_ID = process.env.INSTAGRAM_CLIENT_ID;
+const INSTAGRAM_CLIENT_SECRET = process.env.INSTAGRAM_CLIENT_SECRET;
+const INSTAGRAM_REDIRECT_URI = process.env.INSTAGRAM_REDIRECT_URI;
+
 // Controller function
 const Login = async (req, res) => {
   try {
@@ -318,6 +322,98 @@ const youtubeSilentLogin = async (req, res) => {
       err.response?.data || err.message
     );
     return res.status(500).json({ error: "Silent login failed" });
+  }
+};
+
+// Step 1: Redirect user to Instagram OAuth consent screen
+const instagramAuth = (req, res) => {
+  const scope = ["user_profile", "user_media"].join(","); // adjust if you need media access
+
+  const authUrl = `https://api.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${encodeURIComponent(
+    INSTAGRAM_REDIRECT_URI
+  )}&scope=${scope}&response_type=code`;
+
+  res.redirect(authUrl);
+};
+
+// Step 2: Handle callback, exchange code for tokens, get profile
+const instagramCallback = async (req, res) => {
+  const code = req.query.code;
+  if (!code) {
+    return res.status(400).json({ error: "No code provided" });
+  }
+
+  try {
+    // Exchange code for access token
+    const tokenRes = await axios.post(
+      "https://api.instagram.com/oauth/access_token",
+      new URLSearchParams({
+        client_id: INSTAGRAM_CLIENT_ID,
+        client_secret: INSTAGRAM_CLIENT_SECRET,
+        grant_type: "authorization_code",
+        redirect_uri: INSTAGRAM_REDIRECT_URI,
+        code,
+      })
+    );
+
+    const { access_token, user_id } = tokenRes.data;
+
+    // Get Instagram user profile
+    const profileRes = await axios.get(
+      `https://graph.instagram.com/${user_id}?fields=id,username,account_type,media_count&access_token=${access_token}`
+    );
+
+    const { id, username, account_type, media_count } = profileRes.data;
+
+    // Find or create user in DB
+    let user = await Influencer.findOne({
+      where: { providerId: id, provider: "instagram" },
+    });
+    if (!user) {
+      user = await Influencer.create({
+        first_name: username,
+        email: null, // Instagram doesn’t always give email
+        provider: "instagram",
+        provider_id: id,
+        access_token,
+        refresh_token: null, // Instagram short-lived token, exchangeable
+        role_id: 2,
+        expiry_date: Date.now() + 3600 * 1000, // 1 hour by default
+      });
+    } else {
+      await Influencer.update({ access_token }, { where: { provider_id: id } });
+    }
+
+    // Generate our own JWT
+    const token = jwt.sign({ id: user.id }, secretOrKey, { expiresIn: "7d" });
+
+    // Send HTML page
+    res.send(`
+    <html>
+      <head>
+        <title>Instagram Auth</title>
+        <style>
+          body { font-family: sans-serif; text-align: center; margin-top: 100px; }
+        </style>
+      </head>
+      <body>
+        <h2>✅ Instagram authorization successful!</h2>
+        <p>You can now close this window and return to the app.</p>
+
+        <script>
+          if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage("instagram_auth_success");
+          }
+        </script>
+      </body>
+    </html>
+    `);
+  } catch (err) {
+    console.error(
+      "Instagram callback error:",
+      err.response?.data || err.message
+    );
+    res.status(500).json({ error: "Failed to authenticate with Instagram" });
   }
 };
 
@@ -738,4 +834,6 @@ module.exports = {
   youtubeAuth,
   youtubeCallback,
   youtubeSilentLogin,
+  instagramAuth,
+  instagramCallback,
 };

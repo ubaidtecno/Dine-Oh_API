@@ -16,6 +16,8 @@ const {
   youtubeAuth,
   youtubeSilentLogin,
   youtubeCallback,
+  instagramAuth,
+  instagramCallback,
 } = require("../controller/influencerController");
 
 const { auth } = require("../middleware/auth");
@@ -45,5 +47,8 @@ router.delete("/influencers/:id", auth, deleteInfluencer);
 router.get("/auth/youtube", youtubeAuth);
 router.post("/auth/youtube/login", youtubeSilentLogin);
 router.get("/auth/youtube/callback", youtubeCallback);
+
+router.get("/auth/instagram", instagramAuth);
+router.get("/auth/instagram/callback", instagramCallback);
 
 module.exports = router;
