@@ -372,7 +372,7 @@ const instagramCallback = async (req, res) => {
     const tokenRes = await axios.get(
       `https://graph.facebook.com/v20.0/oauth/access_token?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${encodeURIComponent(
         INSTAGRAM_REDIRECT_URI
-      )}&client_secret=${FACEBOOK_CLIENT_SECRET}&code=${code}`
+      )}&client_secret=${INSTAGRAM_CLIENT_SECRET}&code=${code}`
     );
 
     const { access_token } = tokenRes.data;
