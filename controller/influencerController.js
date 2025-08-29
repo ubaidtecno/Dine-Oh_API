@@ -357,7 +357,9 @@ const instagramAuth = async (req, res) => {
 
   const authUrl = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${encodeURIComponent(
     INSTAGRAM_REDIRECT_URI
-  )}&scope=${encodeURIComponent(scope)}&response_type=code&state=ig_auth`;
+  )}&scope=${encodeURIComponent(
+    scope
+  )}&response_type=code&state=ig_auth&auth_type=reauthenticate`;
 
   return res.json({ success: true, authUrl });
 };
@@ -376,12 +378,14 @@ const instagramCallback = async (req, res) => {
     );
 
     const { access_token } = tokenRes.data;
+    console.log("tokenRes: ", tokenRes);
 
     // 2️⃣ Get FB User (with pages)
     const fbUserRes = await axios.get(
       `https://graph.facebook.com/me?fields=id,name,email&access_token=${access_token}`
     );
     const { id: fbUserId, name, email } = fbUserRes.data;
+    console.log("fbUserRes: ", fbUserRes);
 
     // 3️⃣ Get Pages linked to this FB account
     const pagesRes = await axios.get(
@@ -389,6 +393,7 @@ const instagramCallback = async (req, res) => {
     );
 
     const pages = pagesRes.data?.data || [];
+    console.log("pagesRes: ", pagesRes);
     if (!pages.length) {
       return res.status(400).json({ error: "No Facebook Page linked" });
     }
@@ -401,6 +406,7 @@ const instagramCallback = async (req, res) => {
       `https://graph.facebook.com/v20.0/${pageId}?fields=instagram_business_account&access_token=${pageAccessToken}`
     );
 
+    console.log("igRes: ", igRes);
     const igBusiness = igRes.data?.instagram_business_account;
     if (!igBusiness) {
       return res
