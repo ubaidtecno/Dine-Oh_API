@@ -40,10 +40,27 @@ const signUp = async (req, res) => {
     };
     let newuser = await User.create(userData);
 
-    // Fetch the created Gallery
-    newuser = await User.findByPk(newuser.id);
+    // let otp = Math.floor(1000 + Math.random() * 9000);
+    const otp = 1111;
 
-    return res.json(resjson(newuser, "SignUp Successfully", ""));
+    // Update the user's lastotp field with the new OTP
+    await User.update({ last_otp: otp }, { where: { id: newuser.id } });
+
+    const mobileNumber = newuser.mobile;
+    const message = otpMessageTemplate(otp);
+    // sms.send(mobileNumber, message);
+
+    return res
+      .status(202)
+      .json(
+        resjson(
+          { mobile: newuser.mobile },
+          "Verification code has been sent to your mobile number",
+          "",
+          "",
+          ""
+        )
+      );
   } catch (err) {
     console.error(err);
     return res.status(500).json(resjson("", "Internal Server Error", "", 1));
