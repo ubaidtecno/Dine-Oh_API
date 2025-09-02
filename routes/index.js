@@ -18,6 +18,7 @@ const menu = require("./masterTable.js/menuRoutes");
 const restaurant = require("./restaurantRoutes");
 const restaurantOwner = require("./restaurant_ownerRoutes");
 const review = require("./reviewRoutes");
+const group = require("./groupRoutes");
 const roles = require("./rolesRoutes");
 
 // Use Routes
@@ -41,6 +42,7 @@ router.use(
   influencer,
   restaurantOwner,
   review,
+  group,
   roles
 );
 

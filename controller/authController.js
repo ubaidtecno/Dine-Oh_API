@@ -72,11 +72,13 @@ const login = async (req, res) => {
     const { mobile, password } = req.body;
 
     const user = await User.findOne({
-      where: { mobile },
+      where: { mobile, is_verified: 1 },
     });
 
     if (!user) {
-      return res.status(401).json(resjson("", "User not found.", "", 1));
+      return res
+        .status(401)
+        .json(resjson("", "User not found or not verified.", "", 1));
     }
 
     // Check if the user's role_id is 3

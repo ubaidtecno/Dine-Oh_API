@@ -1205,6 +1205,214 @@ paths:
       security:
         - http: []
 
+  # Group Module
+  /groups:
+    get:
+      tags:
+        - Group
+      summary: Fetch all Groups
+      description: Returns all Groups from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter Groups
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and name
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and name
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched Groups
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Groups"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - Group
+      summary: Creates a new Group
+      description: Creates a new Group
+      requestBody:
+        description: The Group JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Groups"
+        required: true
+      responses:
+        "200":
+          description: New Group added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Groups"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /groups/{id}:
+    get:
+      tags:
+        - Group
+      summary: Fetch Group
+      description: Returns a Group based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of Group to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched Group
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Groups"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - Group
+      summary: Update Group by its id
+      description: Update Group by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of Group to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The Group JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Groups"
+        required: true
+      responses:
+        "200":
+          description: Group updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Groups"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - Group
+      summary: Delete Group
+      description: Deletes a single Group based on the ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of Group to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Group deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /groups/add_members/{id}:
+    put:
+      tags:
+        - Group
+      summary: Add Group Members by its Group id
+      description: Add Group Members by its Group id
+      parameters:
+        - name: id
+          in: path
+          description: ID of Group to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The Group JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupMembers"
+        required: true
+      responses:
+        "200":
+          description: Group updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Groups"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    
+
   # Google Restaurant Module
   /google_restaurants:
     get:
@@ -3771,6 +3979,35 @@ components:
         user_id:
           type: integer
           format: int64
+    Groups:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        visibility:
+          type: string
+          example: "public || private || hidden" 
+        photos:
+          type: array
+          description: Group profile photo.
+          items:
+            type: object
+            properties:
+              image:
+                type: string
+                description: The filename of the image.
+                example: "cons3.jpg"      
+    GroupMembers:
+      type: object
+      properties:
+        user_id:
+          type: number
+        role:
+          type: string
+          example: "member || admin || moderator"
+        
     Influencers:
       type: object
       properties:

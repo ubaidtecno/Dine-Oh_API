@@ -27,6 +27,8 @@ const RestaurantOwner = require("./RestaurantOwner");
 const Review = require("./Review");
 // const Size = require("./masterTable/Size");
 const WorkingDays = require("./WorkingDays");
+const Group = require("./Group");
+const GroupMember = require("./GroupMember");
 const User = require("./User");
 
 Banner.hasOne(Attach, {
@@ -105,6 +107,19 @@ Review.hasMany(Attach, {
 });
 User.belongsTo(Roles, { foreignKey: "role_id" });
 
+// Group ↔ GroupMember
+Group.hasMany(GroupMember, { foreignKey: "group_id" });
+GroupMember.belongsTo(Group, { foreignKey: "group_id" });
+
+// User ↔ GroupMember
+User.hasMany(GroupMember, { foreignKey: "user_id" });
+GroupMember.belongsTo(User, { foreignKey: "user_id" });
+
+Group.hasOne(Attach, {
+  foreignKey: "foreign_id",
+  as: "group_image",
+});
+
 module.exports = {
   AddOns,
   Attach,
@@ -136,4 +151,6 @@ module.exports = {
   // Size,
   User,
   WorkingDays,
+  Group,
+  GroupMember,
 };
