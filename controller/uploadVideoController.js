@@ -44,7 +44,7 @@ let getAllUploadVideo = async (req, res) => {
       },
       {
         model: Attach,
-        as: "upload_videos",
+        as: "videos",
         where: { class: "Video" },
         required: false,
       },
@@ -120,7 +120,7 @@ const getUploadVideo = async (req, res) => {
         },
         {
           model: Attach,
-          as: "upload_videos",
+          as: "videos",
           where: { class: "Video" },
           required: false,
         },
@@ -141,7 +141,10 @@ const getUploadVideo = async (req, res) => {
 // create UploadVideo
 let createUploadVideo = async (req, res) => {
   try {
-    const newUploadVideo = await UploadVideo.create(req.body);
+    // Upsert will either insert or update based on restaurant_id unique constraint
+    const [newUploadVideo, created] = await UploadVideo.upsert(req.body, {
+      returning: true, // ensures we get the updated row back
+    });
 
     if (
       req.body.video !== undefined &&
@@ -156,7 +159,13 @@ let createUploadVideo = async (req, res) => {
       );
     }
 
-    return res.json(resjson(newUploadVideo, "Video was created", ""));
+    return res.json(
+      resjson(
+        newUploadVideo,
+        created ? "Video was created" : "Video was updated",
+        ""
+      )
+    );
   } catch (err) {
     console.error(err);
     return res.status(500).json(resjson("", "Internal Server Error", "", 1));
@@ -175,7 +184,7 @@ let updateUploadVideo = async (req, res) => {
 
     // Handle attachments if provided
     if (req.body.video && req.body.video.length > 0) {
-      await attach.multiFileStore("Video", req.body.video, id, true);
+      await attach.multiFileStore("Video", req.body.video, id, false);
     }
 
     if (result > 0) {
@@ -185,7 +194,7 @@ let updateUploadVideo = async (req, res) => {
         include: [
           {
             model: Attach,
-            as: "upload_videos", // ✅ make sure this alias matches your association
+            as: "videos", // ✅ make sure this alias matches your association
             where: { class: "Video" },
             required: false, // ✅ required:false ensures you still get record even if no attach
           },

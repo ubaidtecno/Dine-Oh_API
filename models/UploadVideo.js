@@ -11,12 +11,15 @@ module.exports = db.sequelize.define(
     },
     restaurant_owner_id: {
       type: Sequelize.BIGINT,
+      unique: true,
     },
     restaurant_id: {
       type: Sequelize.BIGINT,
+      unique: true,
     },
     influencer_id: {
       type: Sequelize.BIGINT,
+      unique: true,
     },
     title: {
       type: Sequelize.STRING,

@@ -112,7 +112,16 @@ UploadVideo.belongsTo(RestaurantOwner, { foreignKey: "restaurant_owner_id" });
 UploadVideo.belongsTo(Influencer, { foreignKey: "influencer_id" });
 UploadVideo.hasMany(Attach, {
   foreignKey: "foreign_id",
-  as: "upload_videos",  
+  as: "videos",
+});
+Restaurant.hasOne(UploadVideo, {
+  foreignKey: "restaurant_id",
+});
+RestaurantOwner.hasOne(UploadVideo, {
+  foreignKey: "restaurant_owner_id",
+});
+Influencer.hasOne(UploadVideo, {
+  foreignKey: "influencer_id",
 });
 
 // Group ↔ GroupMember
@@ -162,4 +171,5 @@ module.exports = {
   WorkingDays,
   Group,
   GroupMember,
+  UploadVideo,
 };

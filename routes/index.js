@@ -20,7 +20,7 @@ const restaurant = require("./restaurantRoutes");
 const restaurantOwner = require("./restaurant_ownerRoutes");
 const review = require("./reviewRoutes");
 const roles = require("./rolesRoutes");
-const uploadVideo = require("./uploadVideoRoutes");
+const uploadVideos = require("./uploadVideoRoutes");
 
 // Use Routes
 router.use(
@@ -44,8 +44,9 @@ router.use(
   influencer,
   restaurantOwner,
   review,
+  group,
   roles,
-  uploadVideo
+  uploadVideos
 );
 
 module.exports = router;
