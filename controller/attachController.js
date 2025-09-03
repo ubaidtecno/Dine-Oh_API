@@ -163,7 +163,7 @@ let storingFiles = async (className, id, fileName, isSingle, isPrimary) => {
           is_primary: isPrimary,
         })
           .then((result) => {
-            // deleteFiles(oldPath);
+            deleteFiles(oldPath);
             resolve(true);
           })
           .catch((err) => {

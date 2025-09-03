@@ -30,6 +30,7 @@ const WorkingDays = require("./WorkingDays");
 const Group = require("./Group");
 const GroupMember = require("./GroupMember");
 const User = require("./User");
+const UploadVideo = require("./UploadVideo");
 
 Banner.hasOne(Attach, {
   foreignKey: "foreign_id",
@@ -106,6 +107,22 @@ Review.hasMany(Attach, {
   as: "restaurant_review_photos",
 });
 User.belongsTo(Roles, { foreignKey: "role_id" });
+UploadVideo.belongsTo(Restaurant, { foreignKey: "restaurant_id" });
+UploadVideo.belongsTo(RestaurantOwner, { foreignKey: "restaurant_owner_id" });
+UploadVideo.belongsTo(Influencer, { foreignKey: "influencer_id" });
+UploadVideo.hasMany(Attach, {
+  foreignKey: "foreign_id",
+  as: "videos",
+});
+Restaurant.hasOne(UploadVideo, {
+  foreignKey: "restaurant_id",
+});
+RestaurantOwner.hasOne(UploadVideo, {
+  foreignKey: "restaurant_owner_id",
+});
+Influencer.hasOne(UploadVideo, {
+  foreignKey: "influencer_id",
+});
 
 // Group ↔ GroupMember
 Group.hasMany(GroupMember, { foreignKey: "group_id" });
@@ -153,4 +170,5 @@ module.exports = {
   WorkingDays,
   Group,
   GroupMember,
+  UploadVideo,
 };

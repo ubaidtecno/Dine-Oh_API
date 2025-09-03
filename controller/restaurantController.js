@@ -16,6 +16,7 @@ const {
   GoogleResPhoto,
   GoogleRestaurant,
   GoogleResReview,
+  UploadVideo,
 } = require("../models");
 const resjson = require("../core/resjson");
 const { sequelize } = require("../config/db");
@@ -506,7 +507,7 @@ let searchNearByRestaurant = async (req, res) => {
   let offset = req.query.offset ? parseInt(req.query.offset) : req.query.offset;
 
   radius === undefined || radius === null ? (radius = 80) : (radius = radius);
-  if (userDataFromRequest.role_id == 2) {
+  if (userDataFromRequest.role_id != 1) {
     if (!_.isEmpty(serachLatt) && !_.isEmpty(searchLong)) {
       let distance = Sequelize.literal(
         "6371 * acos(cos(radians(" +
@@ -568,6 +569,18 @@ let searchNearByRestaurant = async (req, res) => {
             model: Favourite,
             required: false,
             where: { class: "Restaurant", user_id: userId },
+          },
+          {
+            model: UploadVideo,
+            required: false,
+            include: [
+              {
+                model: Attach,
+                as: "videos",
+                where: { class: "Video" },
+                required: false,
+              },
+            ],
           },
         ],
         where: {
@@ -647,6 +660,18 @@ let searchNearByRestaurant = async (req, res) => {
             required: false,
             where: { class: "Restaurant", user_id: userId },
           },
+          {
+            model: UploadVideo,
+            required: false,
+            include: [
+              {
+                model: Attach,
+                as: "videos",
+                where: { class: "Video" },
+                required: false,
+              },
+            ],
+          },
         ],
         offset,
         limit,
@@ -674,7 +699,7 @@ let searchNearByRestaurant = async (req, res) => {
             .json(resjson("", "Something Went wrong", "", 1));
         });
     }
-  } else if (userDataFromRequest.role_id != 2) {
+  } else {
     console.log("role_id", userDataFromRequest.role_id);
     Restaurant.findAndCountAll({
       include: [
@@ -726,6 +751,18 @@ let searchNearByRestaurant = async (req, res) => {
           model: Favourite,
           required: false,
           where: { class: "Restaurant", user_id: userId },
+        },
+        {
+          model: UploadVideo,
+          required: false,
+          include: [
+            {
+              model: Attach,
+              as: "videos",
+              where: { class: "Video" },
+              required: false,
+            },
+          ],
         },
       ],
       where: {
