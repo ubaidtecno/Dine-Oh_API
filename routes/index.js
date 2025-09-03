@@ -11,6 +11,7 @@ const dealType = require("./dealRoutes");
 const deal = require("./masterTable.js/dealTypeRoutes");
 const favourite = require("./favouriteRoutes");
 const googleRestaurant = require("./googleRestaurantRoutes");
+const group = require("./groupRoutes");
 const influencer = require("./influencerRoutes");
 const item = require("./itemRoutes");
 const ItemType = require("./masterTable.js/itemTypeRoutes");
@@ -18,8 +19,8 @@ const menu = require("./masterTable.js/menuRoutes");
 const restaurant = require("./restaurantRoutes");
 const restaurantOwner = require("./restaurant_ownerRoutes");
 const review = require("./reviewRoutes");
-const group = require("./groupRoutes");
 const roles = require("./rolesRoutes");
+const uploadVideo = require("./uploadVideoRoutes");
 
 // Use Routes
 router.use(
@@ -33,6 +34,7 @@ router.use(
   dealType,
   favourite,
   googleRestaurant,
+  group,
   influencer,
   item,
   ItemType,
@@ -42,8 +44,8 @@ router.use(
   influencer,
   restaurantOwner,
   review,
-  group,
-  roles
+  roles,
+  uploadVideo
 );
 
 module.exports = router;

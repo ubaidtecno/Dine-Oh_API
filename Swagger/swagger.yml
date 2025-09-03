@@ -3857,6 +3857,177 @@ paths:
       security:
         - http: []
 
+  # UploadVideo Module
+  /upload_videos:
+    get:
+      tags:
+        - UploadVideo
+      summary: Fetch all videos
+      description: Returns all videos from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter videos
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and date
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and date
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched videos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadVideos"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - UploadVideo
+      summary: Creates a new video
+      description: Creates a new video
+      requestBody:
+        description: The video JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadVideos"
+        required: true
+      responses:
+        "200":
+          description: New video added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadVideos"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /upload_videos/{id}:
+    get:
+      tags:
+        - UploadVideo
+      summary: Fetch video
+      description: Returns a video based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of video to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched video
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadVideos"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - UploadVideo
+      summary: Update video by its id
+      description: Update video by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of video to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The video JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadVideos"
+        required: true
+      responses:
+        "200":
+          description: Video updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadVideos"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - UploadVideo
+      summary: Delete video
+      description: Deletes a single video based on the ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of video to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: video deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
+ 
 # Components
 components:
   schemas:
@@ -4427,6 +4598,40 @@ components:
           type: string
         password:
           type: string
+    UploadVideos:
+      type: object
+      properties:
+        restaurant_owner_id:
+          type: number
+        restaurant_id:
+          type: number
+        influencer_id:
+          type: number
+        title:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+        is_youtube:
+          type: boolean
+          default: false
+        is_instagram:
+          type: boolean
+          default: false
+        is_own:
+          type: boolean
+          default: false
+        video:
+          type: array
+          description: A list of item video attachment.
+          items:
+            type: object
+            properties:
+              image:
+                type: string
+                description: The filename of the image.
+                example: "cons3.jpg"
     Error:
       type: object
       properties:

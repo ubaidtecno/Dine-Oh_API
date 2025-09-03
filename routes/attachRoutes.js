@@ -10,7 +10,7 @@ const {
 
 const upload = multer({
   dest: "../temp",
-  limits: { fileSize: 1024 * 1024 * 20 },
+  // limits: { fileSize: 1024 * 1024 * 20 },
 });
 
 router.get("/attachments", getAllAttachments);
