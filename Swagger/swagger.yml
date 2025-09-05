@@ -1885,6 +1885,58 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
       x-codegen-request-body-name: body
+  /auth/instagram:
+    get:
+      tags:
+        - Influencer
+      summary: Instagram Signup 
+      description: Signup a new user in Instagram Authentication
+      
+      responses:
+        "200":
+          description: New user added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /auth/instagram/login:
+    post:
+      tags:
+        - Influencer
+      summary: Dino Oh Instagram login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: test@gmail.com
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "default":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      x-codegen-request-body-name: body
         
 
   # Item Module
