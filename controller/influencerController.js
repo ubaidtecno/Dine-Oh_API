@@ -353,6 +353,9 @@ const instagramAuth = async (req, res) => {
     "instagram_basic",
     "pages_show_list",
     "pages_read_engagement",
+    "instagram_manage_insights",
+    "pages_read_user_content",
+    "pages_manage_metadata",
   ].join(",");
 
   const authUrl = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${encodeURIComponent(
