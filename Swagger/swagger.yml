@@ -525,6 +525,206 @@ paths:
       security:
         - http: []
 
+   # Banner Module
+  
+  /campaigns:
+    get:
+      tags:
+        - Campaign
+      summary: Fetch all campaigns
+      description: Returns all campaigns from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter campaigns
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id 
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id 
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched campaigns
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - Campaign
+      summary: Creates a new campaign
+      description: Creates a new campaign
+      requestBody:
+        description: The campaign JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Campaign"
+        required: true
+      responses:
+        "200":
+          description: New campaign added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /campaigns/{id}:
+    get:
+      tags:
+        - Campaign
+      summary: Fetch campaign
+      description: Returns a campaign based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of campaign to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched campaign
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - Campaign
+      summary: Update campaign by its id
+      description: Update campaign by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of campaign to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The campaign JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Campaign"
+        required: true
+      responses:
+        "200":
+          description: campaign updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - Campaign
+      summary: Delete campaign
+      description: Deletes a single campaign based on the ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of campaign to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: campaign deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+  /campaigns/apply:
+    post:
+      tags:
+        - Campaign
+      summary: Creates a new campaign application for influencer
+      description: Creates a new campaign application for influencer
+      requestBody:
+        description: The campaign JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CampaignParticipation"
+        required: true
+      responses:
+        "200":
+          description: New campaign participant added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignParticipation"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+
   # Cuisine Module
   /cuisines:
     get:
@@ -3958,6 +4158,59 @@ components:
                 type: string
                 description: The filename of the image.
                 example: "cons3.jpg"
+    Campaign:
+      type: object
+      properties:
+        restaurant_owner_id:
+          type: number
+        title:
+          type: string
+        description:
+          type: string
+        cuisine:
+          type: string
+        location:
+          type: string
+        payment_type:
+          type: string
+          example: 'paid'
+        fee:
+          type: number
+        in_kind_details:
+          type: string
+        min_followers:
+          type: number
+        max_followers:
+          type: number
+        requirements:
+          type: string
+        start_date:
+          type: string
+        end_date:
+          type: string
+        status:
+          type: string
+          example: "published"
+        photos:
+          type: array
+          description: A list of photos.
+          items:
+            type: object
+            properties:
+              image:
+                type: string
+                description: The filename of the image.
+                example: "cons3.jpg"
+    CampaignParticipation:
+      type: object
+      properties:
+        campaign_id:
+          type: number
+        influencer_id:
+          type: number
+        message:
+          type: string
+            
     Cuisines:
       type: object
       properties:

@@ -1,0 +1,30 @@
+const express = require("express");
+const router = express.Router();
+
+const {
+  getAllCampaign,
+  getCampaign,
+  createCampaign,
+  updateCampaign,
+  deleteCampaign,
+  applyForCampaign,
+  inviteInfluencer,
+} = require("../controller/campaignController");
+
+const { auth } = require("../middleware/auth");
+
+router.get("/campaigns", getAllCampaign);
+
+router.get("/campaigns/:id", getCampaign);
+
+router.post("/campaigns", createCampaign);
+
+router.post("/campaigns/apply", applyForCampaign);
+
+router.post("/campaigns/invite", inviteInfluencer);
+
+router.put("/campaigns/:id", updateCampaign);
+
+router.delete("/campaigns/:id", deleteCampaign);
+
+module.exports = router;

@@ -21,6 +21,7 @@ const review = require("./reviewRoutes");
 const group = require("./groupRoutes");
 const roles = require("./rolesRoutes");
 const uploadVideos = require("./uploadVideoRoutes");
+const campaign = require("./campaignRoutes");
 
 // Use Routes
 router.use(
@@ -45,7 +46,8 @@ router.use(
   review,
   group,
   roles,
-  uploadVideos
+  uploadVideos,
+  campaign
 );
 
 module.exports = router;
