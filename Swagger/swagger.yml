@@ -724,6 +724,35 @@ paths:
       security:
         - http: []
       x-codegen-request-body-name: body
+  /campaigns/invite:
+    post:
+      tags:
+        - Campaign
+      summary: Creates a new campaign invite for influencer by restaurant owner
+      description: Creates a new campaign invite for influencer by restaurant owner
+      requestBody:
+        description: The campaign JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CampaignParticipationForInvite"
+        required: true
+      responses:
+        "200":
+          description: New campaign invite participant added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignParticipationForInvite"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
 
   # Cuisine Module
   /cuisines:
@@ -4204,6 +4233,17 @@ components:
     CampaignParticipation:
       type: object
       properties:
+        campaign_id:
+          type: number
+        influencer_id:
+          type: number
+        message:
+          type: string
+    CampaignParticipationForInvite:
+      type: object
+      properties:
+        restaurant_owner_id:
+          type: number
         campaign_id:
           type: number
         influencer_id:

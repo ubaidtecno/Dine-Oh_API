@@ -237,6 +237,16 @@ let inviteInfluencer = async (req, res) => {
     const { campaign_id, influencer_id, message, restaurant_owner_id } =
       req.body;
 
+    const owner = await RestaurantOwner.findOne({
+      where: { id: restaurant_owner_id },
+    });
+
+    if (!owner) {
+      return res
+        .status(404)
+        .json(resjson("", "Restaurant owner not found", "", 1));
+    }
+
     // verify ownership
     const campaign = await Campaign.findOne({
       where: { id: campaign_id, restaurant_owner_id },
