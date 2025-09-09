@@ -35,6 +35,7 @@ let getAllCampaign = async (req, res) => {
     include: [
       {
         model: CampaignParticipation,
+        where: filter.inCampaignParticipation,
         required: false,
       },
       {
@@ -539,6 +540,31 @@ let updateCampaign = async (req, res) => {
   }
 };
 
+let updateCampaignParticipation = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [result] = await CampaignParticipation.update(req.body, {
+      where: { id },
+    });
+
+    if (result > 0) {
+      const data = await CampaignParticipation.findOne({
+        where: { id },
+      });
+      if (data?.status !== "") {
+        return res.json(resjson(data, "Updated successfully", ""));
+      } else {
+        return res.json(resjson("", "Please check the status correctly", ""));
+      }
+    } else {
+      return res.status(404).json(resjson("", "Record not found", "", 1));
+    }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(resjson("", "Internal Server Error", "", 1));
+  }
+};
+
 const deleteCampaign = async (req, res) => {
   try {
     const { id } = req.params;
@@ -594,4 +620,5 @@ module.exports = {
   applyForCampaign,
   inviteInfluencer,
   getAllCampaignForInfluencer,
+  updateCampaignParticipation,
 };
