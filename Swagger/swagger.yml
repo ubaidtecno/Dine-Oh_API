@@ -753,6 +753,56 @@ paths:
       security:
         - http: []
       x-codegen-request-body-name: body
+  /campaigns_for_influencer:
+    get:
+      tags:
+        - Campaign
+      summary: Fetch all campaigns based on the login influencer
+      description: Returns all campaigns based on the login influencer from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter campaigns
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id 
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id 
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched campaigns
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []    
 
   # Cuisine Module
   /cuisines:
@@ -4367,6 +4417,10 @@ components:
         mobile:
           type: string
         password:
+          type: string
+        location:
+          type: string
+        category:
           type: string
         profile_photo:
           type: array

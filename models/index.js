@@ -52,6 +52,15 @@ Favourite.belongsTo(Item, {
   foreignKey: "foreign_id",
   constraints: false,
 });
+Favourite.belongsTo(Campaign, {
+  foreignKey: "foreign_id",
+  constraints: false,
+});
+Campaign.hasMany(Favourite, {
+  foreignKey: "foreign_id",
+  constraints: false,
+  // scope: { class: "Campaign" }, // if you use polymorphic favourites
+});
 GoogleRestaurant.hasMany(GoogleResPhoto, {
   foreignKey: "google_restaurant_id",
   as: "photos",

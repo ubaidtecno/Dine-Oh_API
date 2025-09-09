@@ -2,7 +2,7 @@ const passport = require("passport");
 const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
 const _ = require("lodash");
 const { secretOrKey } = require("./key");
-const { User } = require("../models");
+const { User, Influencer } = require("../models");
 
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -25,6 +25,26 @@ passport.use(
       }
     } catch (error) {
       return done(error, false);
+    }
+  })
+);
+
+// Strategy for Influencers
+passport.use(
+  "influencer-jwt",
+  new JwtStrategy(jwtOptions, async (jwtPayload, done) => {
+    try {
+      const influencer = await Influencer.findOne({
+        where: { id: jwtPayload.id },
+      });
+
+      if (influencer) {
+        return done(null, influencer.dataValues);
+      } else {
+        return done(null, false, { message: "Influencer not found" });
+      }
+    } catch (err) {
+      return done(err, false);
     }
   })
 );

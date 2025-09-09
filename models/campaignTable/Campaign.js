@@ -59,6 +59,9 @@ module.exports = db.sequelize.define(
       type: Sequelize.ENUM("draft", "published", "closed"),
       defaultValue: "published",
     },
+    category: {
+      type: Sequelize.STRING, // e.g., "food", "travel", "lifestyle"
+    },
   },
   {
     timestamps: 1,
