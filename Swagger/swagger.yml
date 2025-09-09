@@ -802,7 +802,44 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
       security:
-        - http: []    
+        - http: []  
+  /campaign_participations/{id}:
+    put:
+      tags:
+        - Campaign
+      summary: Update Campaign participant by its id
+      description: Update Campaign participant by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of Campaign participant to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The Campaign participant JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CampaignParticipationStatus"
+        required: true
+      responses:
+        "200":
+          description: Campaign participant updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignParticipationStatus"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body        
 
   # Cuisine Module
   /cuisines:
@@ -4289,6 +4326,12 @@ components:
           type: number
         message:
           type: string
+    CampaignParticipationStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "accepted || rejected || declined"
     CampaignParticipationForInvite:
       type: object
       properties:

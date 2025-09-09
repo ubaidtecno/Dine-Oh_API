@@ -10,6 +10,7 @@ const {
   applyForCampaign,
   inviteInfluencer,
   getAllCampaignForInfluencer,
+  updateCampaignParticipation,
 } = require("../controller/campaignController");
 
 const { influencerAuth } = require("../middleware/auth");
@@ -31,6 +32,8 @@ router.post("/campaigns/apply", applyForCampaign);
 router.post("/campaigns/invite", inviteInfluencer);
 
 router.put("/campaigns/:id", updateCampaign);
+
+router.put("/campaign_participations/:id", updateCampaignParticipation);
 
 router.delete("/campaigns/:id", deleteCampaign);
 
