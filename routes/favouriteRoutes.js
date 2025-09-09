@@ -11,14 +11,14 @@ const {
 
 const { auth } = require("../middleware/auth");
 
-router.get("/favourites", auth, getAllFavourites);
+router.get("/favourites", getAllFavourites);
 
-router.get("/favourites/:id", auth, getFavourite);
+router.get("/favourites/:id", getFavourite);
 
-router.post("/favourites", auth, createFavourite);
+router.post("/favourites", createFavourite);
 
-router.put("/favourites/:id", auth, updateFavourite);
+router.put("/favourites/:id", updateFavourite);
 
-router.delete("/favourites/:id", auth, deleteFavourite);
+router.delete("/favourites/:id", deleteFavourite);
 
 module.exports = router;

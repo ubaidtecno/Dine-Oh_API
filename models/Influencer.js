@@ -58,6 +58,12 @@ module.exports = db.sequelize.define(
     is_verified: {
       type: Sequelize.TINYINT,
     },
+    location: {
+      type: Sequelize.STRING,
+    },
+    category: {
+      type: Sequelize.STRING,
+    },
   },
   {
     timestamps: 1,

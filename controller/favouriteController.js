@@ -8,113 +8,116 @@ const {
   Attach,
   Restaurant,
   RestaurantCuisine,
+  Cuisines,
+  Campaign,
 } = require("../models");
 const resjson = require("../core/resjson");
 
 let getAllFavourites = async (req, res) => {
-  let filter = req.query.filter;
-  filter === undefined
-    ? (filter = "")
-    : (filter = JSON.parse(req.query.filter));
-
-  let limit = req.query.limit ? parseInt(req.query.limit) : req.query.limit;
-  let offset = req.query.offset ? parseInt(req.query.offset) : req.query.offset;
-  let serachLatt = req.query.latitude;
-  let searchLong = req.query.longitude;
-
-  //   let sortField = req.query.sortField ? req.query.sortField : "id";
-  //   let sortOrder = req.query.sortField ? req.query.sortOrder : "ASC";
-
-  let distance = Sequelize.literal(
-    "6371 * acos(cos(radians(" +
-      serachLatt +
-      ")) * cos(radians(restaurant.latitude)) * cos(radians(" +
-      searchLong +
-      ") - radians(restaurant.longitute)) + sin(radians(" +
-      serachLatt +
-      ")) * sin(radians(restaurant.latitude)))"
-  );
-
-  if (serachLatt && searchLong) {
-    obj = {
-      where: filter.where,
-      include: [
-        {
-          model: Item,
-          required: false,
-          // where: Sequelize.literal('`favourite`.`class`= "Items"'),
-          include: [
-            { model: Attach, required: false, where: { class: "Item" } },
-            { model: Restaurant, required: false },
-          ],
-        },
-        {
-          model: Restaurant,
-          required: false,
-          attributes: { include: [[distance, "distance"]] },
-          include: [
-            {
-              model: Attach,
-              as: "restaurant_profile_photo",
-              required: false,
-              where: { class: "Restaurant_Profile_Photo" },
-            },
-            {
-              model: RestaurantCuisine,
-              required: false,
-              include: { model: Cuisine, required: false },
-            },
-            {
-              model: Item,
-              required: false,
-            },
-          ],
-        },
-      ],
-      offset,
-      limit,
-    };
-  } else {
-    obj = {
-      where: filter.where,
-      include: [
-        {
-          model: Item,
-          required: false,
-          // where: Sequelize.literal('`favourite`.`class`= "Items"'),
-          include: [
-            { model: Attach, required: false, where: { class: "Item" } },
-            { model: Restaurant, required: false },
-          ],
-        },
-        {
-          model: Restaurant,
-          required: false,
-          include: [
-            {
-              model: Attach,
-              as: "restaurant_profile_photo",
-              required: false,
-              where: { class: "Restaurant_Profile_Photo" },
-            },
-            {
-              model: RestaurantCuisine,
-              required: false,
-              include: { model: Cuisine, required: false },
-            },
-            {
-              model: Item,
-              required: false,
-            },
-          ],
-        },
-      ],
-      offset,
-      limit,
-    };
-  }
-
   try {
+    let filter = req.query.filter;
+    filter === undefined
+      ? (filter = "")
+      : (filter = JSON.parse(req.query.filter));
+
+    let limit = req.query.limit ? parseInt(req.query.limit) : req.query.limit;
+    let offset = req.query.offset
+      ? parseInt(req.query.offset)
+      : req.query.offset;
+    let serachLatt = req.query.latitude;
+    let searchLong = req.query.longitude;
+
+    //   let sortField = req.query.sortField ? req.query.sortField : "id";
+    //   let sortOrder = req.query.sortField ? req.query.sortOrder : "ASC";
+
+    if (serachLatt && searchLong) {
+      let distance = Sequelize.literal(
+        "6371 * acos(cos(radians(" +
+          serachLatt +
+          ")) * cos(radians(restaurant.latitude)) * cos(radians(" +
+          searchLong +
+          ") - radians(restaurant.longitute)) + sin(radians(" +
+          serachLatt +
+          ")) * sin(radians(restaurant.latitude)))"
+      );
+      obj = {
+        where: filter.where,
+        include: [
+          {
+            model: Item,
+            required: false,
+            // where: Sequelize.literal('`favourite`.`class`= "Items"'),
+            include: [
+              { model: Attach, required: false, where: { class: "Item" } },
+              { model: Restaurant, required: false },
+            ],
+          },
+          {
+            model: Restaurant,
+            required: false,
+            attributes: { include: [[distance, "distance"]] },
+            include: [
+              {
+                model: Attach,
+                as: "restaurant_profile_photo",
+                required: false,
+                where: { class: "Restaurant_Profile_Photo" },
+              },
+              {
+                model: RestaurantCuisine,
+                required: false,
+                include: { model: Cuisines, required: false },
+              },
+              {
+                model: Item,
+                required: false,
+              },
+            ],
+          },
+        ],
+        offset,
+        limit,
+      };
+    } else {
+      obj = {
+        where: filter.where,
+        include: [
+          {
+            model: Item,
+            required: false,
+            // where: Sequelize.literal('`favourite`.`class`= "Items"'),
+            include: [
+              { model: Attach, required: false, where: { class: "Item" } },
+              { model: Restaurant, required: false },
+            ],
+          },
+          {
+            model: Restaurant,
+            required: false,
+            include: [
+              {
+                model: Attach,
+                as: "restaurant_profile_photo",
+                required: false,
+                where: { class: "Restaurant_Profile_Photo" },
+              },
+              {
+                model: RestaurantCuisine,
+                required: false,
+                include: { model: Cuisines, required: false },
+              },
+              {
+                model: Item,
+                required: false,
+              },
+            ],
+          },
+        ],
+        offset,
+        limit,
+      };
+    }
+
     let favourites = await Favourite.findAndCountAll(obj);
     return res.json(resjson(favourites, "", "", 0));
   } catch (err) {

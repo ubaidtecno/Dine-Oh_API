@@ -9,11 +9,18 @@ const {
   deleteCampaign,
   applyForCampaign,
   inviteInfluencer,
+  getAllCampaignForInfluencer,
 } = require("../controller/campaignController");
 
-const { auth } = require("../middleware/auth");
+const { influencerAuth } = require("../middleware/auth");
 
 router.get("/campaigns", getAllCampaign);
+
+router.get(
+  "/campaigns_for_influencer",
+  influencerAuth,
+  getAllCampaignForInfluencer
+);
 
 router.get("/campaigns/:id", getCampaign);
 
