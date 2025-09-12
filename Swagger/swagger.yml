@@ -525,8 +525,8 @@ paths:
       security:
         - http: []
 
-   # Banner Module
-  
+   
+   # Campaign Module
   /campaigns:
     get:
       tags:
@@ -840,6 +840,176 @@ paths:
       security:
         - http: []
       x-codegen-request-body-name: body        
+
+  /campaign_chats:
+    get:
+      tags:
+        - Campaign Chat
+      summary: Fetch all Campaign Chats
+      description: Returns all Campaign Chats from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter Campaign Chats
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched all Campaign Chats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignChat"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - Campaign Chat
+      summary: Creates a new Campaign Chat
+      description: Creates a new Campaign Chat
+      requestBody:
+        description: The Campaign Chat JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CampaignChat"
+        required: true
+      responses:
+        "200":
+          description: New Campaign Chat added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignChat"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /campaign_chats/{id}:
+    get:
+      tags:
+        - Campaign Chat
+      summary: Fetch Campaign Chat
+      description: Returns a Campaign Chat based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of Campaign Chat to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched Campaign Chat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignChat"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - Campaign Chat
+      summary: Update Campaign Chat by its id
+      description: Update Campaign Chat by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of Campaign Chat to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The Campaign Chat JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CampaignChat"
+        required: true
+      responses:
+        "200":
+          description: Campaign Chat updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignChat"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - Campaign Chat
+      summary: Delete Campaign Chat
+      description: Deletes a single Campaign Chat based on the ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of Campaign Chat to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Campaign Chat deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
 
   # Cuisine Module
   /cuisines:
@@ -5025,6 +5195,21 @@ components:
         is_active:
           type: boolean
           default: true
+    CampaignChat:
+      type: object
+      properties:
+        campaign_id:
+          type: number
+        restaurant_owner_id:
+          type: number
+        influencer_id:
+          type: number
+        sender_type:
+          type: string
+          example: "restaurant_owner || influencer"
+        message:
+          type: string
+        
     Users:
       type: object
       properties:

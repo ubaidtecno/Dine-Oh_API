@@ -64,6 +64,18 @@ module.exports = db.sequelize.define(
     category: {
       type: Sequelize.STRING,
     },
+    device_id: {
+      type: Sequelize.STRING,
+    },
+    device_name: {
+      type: Sequelize.STRING,
+    },
+    device_token: {
+      type: Sequelize.STRING,
+    },
+    device_type: {
+      type: Sequelize.STRING,
+    },
   },
   {
     timestamps: 1,
