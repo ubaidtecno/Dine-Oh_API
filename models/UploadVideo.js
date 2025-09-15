@@ -13,6 +13,10 @@ module.exports = db.sequelize.define(
       type: Sequelize.BIGINT,
       unique: true,
     },
+    campaign_participation_id: {
+      type: Sequelize.BIGINT,
+      unique: true,
+    },
     restaurant_id: {
       type: Sequelize.BIGINT,
       unique: true,

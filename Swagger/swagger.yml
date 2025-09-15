@@ -804,6 +804,34 @@ paths:
       security:
         - http: []  
   /campaign_participations/{id}:
+    get:
+      tags:
+        - Campaign
+      summary: Fetch campaign participation
+      description: Returns a campaign participation based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of campaign participation to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched campaign participation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignParticipation"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
     put:
       tags:
         - Campaign
@@ -839,7 +867,32 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - http: []
-      x-codegen-request-body-name: body        
+      x-codegen-request-body-name: body    
+    delete:
+      tags:
+        - Campaign
+      summary: Delete campaign participation
+      description: Deletes a single campaign participation based on the ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of campaign participation to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: campaign participation deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []      
 
   /campaign_chats:
     get:
@@ -4566,6 +4619,10 @@ paths:
         - http: []
 
  
+  
+  
+   
+
 # Components
 components:
   schemas:
@@ -4673,6 +4730,16 @@ components:
         status:
           type: string
           example: "accepted || rejected || declined"
+        photos:
+          type: array
+          description: A list of photos.
+          items:
+            type: object
+            properties:
+              image:
+                type: string
+                description: The filename of the image.
+                example: "cons3.jpg"  
     CampaignParticipationForInvite:
       type: object
       properties:
@@ -5209,6 +5276,42 @@ components:
           example: "restaurant_owner || influencer"
         message:
           type: string
+    UploadVideo:
+      type: object
+      properties:
+        restaurant_owner_id:
+          type: number
+        campaign_participation_id:
+          type: number
+        restaurant_id:
+          type: number
+        influencer_id:
+          type: number
+        title:
+          type: string
+        url:
+          type: string
+        is_youtube:
+          type: boolean
+          default: false
+        is_instagram:
+          type: boolean
+          default: false
+        is_own:
+          type: boolean
+          default: false
+        description:
+          type: string
+        video:
+          type: array
+          description: A list of video attachments.
+          items:
+            type: object
+            properties:
+              image:
+                type: string
+                description: The filename of the image.
+                example: "cons3.mp4"
         
     Users:
       type: object
@@ -5225,40 +5328,6 @@ components:
           type: string
         password:
           type: string
-    UploadVideos:
-      type: object
-      properties:
-        restaurant_owner_id:
-          type: number
-        restaurant_id:
-          type: number
-        influencer_id:
-          type: number
-        title:
-          type: string
-        description:
-          type: string
-        url:
-          type: string
-        is_youtube:
-          type: boolean
-          default: false
-        is_instagram:
-          type: boolean
-          default: false
-        is_own:
-          type: boolean
-          default: false
-        video:
-          type: array
-          description: A list of item video attachment.
-          items:
-            type: object
-            properties:
-              image:
-                type: string
-                description: The filename of the image.
-                example: "cons3.jpg"
     Error:
       type: object
       properties:

@@ -159,6 +159,17 @@ CampaignParticipation.belongsTo(Influencer, { foreignKey: "influencer_id" });
 CampaignChat.belongsTo(Campaign, { foreignKey: "campaign_id" });
 CampaignChat.belongsTo(RestaurantOwner, { foreignKey: "restaurant_owner_id" });
 CampaignChat.belongsTo(Influencer, { foreignKey: "influencer_id" });
+CampaignParticipation.hasMany(Attach, {
+  foreignKey: "foreign_id",
+  as: "campaign_participation_photos",
+});
+
+CampaignParticipation.hasMany(UploadVideo, {
+  foreignKey: "campaign_participation_id",
+});
+UploadVideo.belongsTo(CampaignParticipation, {
+  foreignKey: "campaign_participation_id",
+});
 
 module.exports = {
   AddOns,

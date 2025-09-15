@@ -13,12 +13,12 @@ const { auth } = require("../middleware/auth");
 
 router.get("/upload_videos", getAllUploadVideo);
 
-router.get("/upload_videos/:id", auth, getUploadVideo);
+router.get("/upload_videos/:id", getUploadVideo);
 
-router.post("/upload_videos", auth, createUploadVideo);
+router.post("/upload_videos", createUploadVideo);
 
-router.put("/upload_videos/:id", auth, updateUploadVideo);
+router.put("/upload_videos/:id", updateUploadVideo);
 
-router.delete("/upload_videos/:id", auth, deleteUploadVideo);
+router.delete("/upload_videos/:id", deleteUploadVideo);
 
 module.exports = router;
