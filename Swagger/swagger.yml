@@ -804,6 +804,34 @@ paths:
       security:
         - http: []  
   /campaign_participations/{id}:
+    get:
+      tags:
+        - Campaign
+      summary: Fetch campaign participation
+      description: Returns a campaign participation based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of campaign participation to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched campaign participation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignParticipation"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
     put:
       tags:
         - Campaign
@@ -5251,6 +5279,8 @@ components:
       type: object
       properties:
         restaurant_owner_id:
+          type: number
+        campaign_participation_id:
           type: number
         restaurant_id:
           type: number

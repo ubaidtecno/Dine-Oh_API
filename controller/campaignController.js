@@ -53,18 +53,16 @@ let getAllCampaign = async (req, res) => {
                 "last_otp",
               ],
             },
+          },
+          {
+            model: UploadVideo,
+            required: false,
             include: [
               {
-                model: UploadVideo,
+                model: Attach,
+                as: "videos",
+                where: { class: "Video" },
                 required: false,
-                include: [
-                  {
-                    model: Attach,
-                    as: "videos",
-                    where: { class: "Video" },
-                    required: false,
-                  },
-                ],
               },
             ],
           },
@@ -208,6 +206,35 @@ let getAllCampaignForInfluencer = async (req, res) => {
         model: CampaignParticipation,
         required: false,
         where: { influencer_id: userId },
+        include: [
+          {
+            model: Influencer,
+            required: false,
+            attributes: {
+              exclude: [
+                "password",
+                "provider",
+                "access_token",
+                "refresh_token",
+                "expiry_date",
+                "device_token",
+                "last_otp",
+              ],
+            },
+          },
+          {
+            model: UploadVideo,
+            required: false,
+            include: [
+              {
+                model: Attach,
+                as: "videos",
+                where: { class: "Video" },
+                required: false,
+              },
+            ],
+          },
+        ],
       },
       {
         model: Attach,
@@ -331,8 +358,42 @@ const getCampaign = async (req, res, next) => {
         {
           model: CampaignParticipation,
           required: false,
+          include: [
+            {
+              model: Influencer,
+              required: false,
+              attributes: {
+                exclude: [
+                  "password",
+                  "provider",
+                  "access_token",
+                  "refresh_token",
+                  "expiry_date",
+                  "device_token",
+                  "last_otp",
+                ],
+              },
+            },
+            {
+              model: UploadVideo,
+              required: false,
+              include: [
+                {
+                  model: Attach,
+                  as: "videos",
+                  where: { class: "Video" },
+                  required: false,
+                },
+              ],
+            },
+            {
+              model: Attach,
+              where: { class: "Campaign_Participation_Photo" },
+              as: "campaign_participation_photos",
+              required: false,
+            },
+          ],
         },
-
         {
           model: Attach,
           where: { class: "Campaign_Photo" },
@@ -578,6 +639,63 @@ let updateCampaign = async (req, res) => {
   }
 };
 
+const getCampaignParticipation = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const campaign = await CampaignParticipation.findOne({
+      where: { id },
+      include: [
+        {
+          model: Influencer,
+          required: false,
+          attributes: {
+            exclude: [
+              "password",
+              "provider",
+              "access_token",
+              "refresh_token",
+              "expiry_date",
+              "device_token",
+              "last_otp",
+            ],
+          },
+          include: [
+            {
+              model: UploadVideo,
+              required: false,
+              include: [
+                {
+                  model: Attach,
+                  as: "videos",
+                  where: { class: "Video" },
+                  required: false,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: Attach,
+          where: { class: "Campaign_Participation_Photo" },
+          as: "campaign_participation_photos",
+          required: false,
+        },
+      ],
+    });
+
+    if (!campaign) {
+      return res
+        .status(404)
+        .json(resjson("", "Campaign Participation not found", "", 1));
+    }
+
+    return res.json(resjson(campaign, "", "", 0));
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(resjson("", "Internal Server Error", "", 1));
+  }
+};
+
 let updateCampaignParticipation = async (req, res) => {
   const { id } = req.params;
   try {
@@ -707,4 +825,5 @@ module.exports = {
   getAllCampaignForInfluencer,
   updateCampaignParticipation,
   deleteCampaignParticipation,
+  getCampaignParticipation,
 };

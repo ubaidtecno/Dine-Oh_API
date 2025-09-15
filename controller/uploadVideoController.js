@@ -8,6 +8,7 @@ const {
   Restaurant,
   RestaurantOwner,
   Influencer,
+  CampaignParticipation,
 } = require("../models");
 const resjson = require("../core/resjson");
 const attach = require("../controller/attachController");
@@ -57,6 +58,10 @@ let getAllUploadVideo = async (req, res) => {
         model: Attach,
         as: "videos",
         where: { class: "Video" },
+        required: false,
+      },
+      {
+        model: CampaignParticipation,
         required: false,
       },
     ],
@@ -128,11 +133,26 @@ const getUploadVideo = async (req, res) => {
         {
           model: Influencer,
           required: false,
+          attributes: {
+            exclude: [
+              "password",
+              "provider",
+              "access_token",
+              "refresh_token",
+              "expiry_date",
+              "device_token",
+              "last_otp",
+            ],
+          },
         },
         {
           model: Attach,
           as: "videos",
           where: { class: "Video" },
+          required: false,
+        },
+        {
+          model: CampaignParticipation,
           required: false,
         },
       ],

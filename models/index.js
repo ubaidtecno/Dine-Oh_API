@@ -164,6 +164,13 @@ CampaignParticipation.hasMany(Attach, {
   as: "campaign_participation_photos",
 });
 
+CampaignParticipation.hasMany(UploadVideo, {
+  foreignKey: "campaign_participation_id",
+});
+UploadVideo.belongsTo(CampaignParticipation, {
+  foreignKey: "campaign_participation_id",
+});
+
 module.exports = {
   AddOns,
   Attach,
