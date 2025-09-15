@@ -4490,7 +4490,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UploadVideos"
+                $ref: "#/components/schemas/UploadVideo"
         default:
           description: Unexpected error
           content:
@@ -4509,7 +4509,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UploadVideos"
+              $ref: "#/components/schemas/UploadVideo"
         required: true
       responses:
         "200":
@@ -4517,7 +4517,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UploadVideos"
+                $ref: "#/components/schemas/UploadVideo"
         default:
           description: Unexpected error
           content:
@@ -4547,7 +4547,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UploadVideos"
+                $ref: "#/components/schemas/UploadVideo"
         default:
           description: Unexpected error
           content:
@@ -4574,7 +4574,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UploadVideos"
+              $ref: "#/components/schemas/UploadVideo"
         required: true
       responses:
         "200":
@@ -4582,7 +4582,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UploadVideos"
+                $ref: "#/components/schemas/UploadVideo"
         default:
           description: Unexpected error
           content:
@@ -4620,7 +4620,7 @@ paths:
 
  
   
-  
+
    
 
 # Components
