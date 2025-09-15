@@ -696,6 +696,7 @@ const getCampaignParticipation = async (req, res, next) => {
   }
 };
 
+// update paticipants with photos or attachments if needed
 let updateCampaignParticipation = async (req, res) => {
   const { id } = req.params;
   try {

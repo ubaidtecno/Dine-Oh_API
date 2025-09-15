@@ -4449,7 +4449,7 @@ paths:
         - http: []
 
   
-  # Upload Video Module
+  # Upload Video Module for all models
   /upload_videos:
     get:
       tags:
