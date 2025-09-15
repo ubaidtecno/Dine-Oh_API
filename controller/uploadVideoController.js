@@ -41,6 +41,17 @@ let getAllUploadVideo = async (req, res) => {
       {
         model: Influencer,
         required: false,
+        attributes: {
+          exclude: [
+            "password",
+            "provider",
+            "access_token",
+            "refresh_token",
+            "expiry_date",
+            "device_token",
+            "last_otp",
+          ],
+        },
       },
       {
         model: Attach,
