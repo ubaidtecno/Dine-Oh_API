@@ -4448,7 +4448,8 @@ paths:
       security:
         - http: []
 
-  # UploadVideo Module
+  
+  # Upload Video Module for all models
   /upload_videos:
     get:
       tags:
