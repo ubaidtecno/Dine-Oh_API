@@ -659,18 +659,16 @@ const getCampaignParticipation = async (req, res, next) => {
               "last_otp",
             ],
           },
+        },
+        {
+          model: UploadVideo,
+          required: false,
           include: [
             {
-              model: UploadVideo,
+              model: Attach,
+              as: "videos",
+              where: { class: "Video" },
               required: false,
-              include: [
-                {
-                  model: Attach,
-                  as: "videos",
-                  where: { class: "Video" },
-                  required: false,
-                },
-              ],
             },
           ],
         },
