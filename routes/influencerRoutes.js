@@ -34,15 +34,15 @@ router.post("/influencers/verify_otp", verifyOtp);
 
 router.post("/influencers/set_password", setPassword);
 
-router.get("/influencers", auth, getAllInfluencer);
+router.get("/influencers", getAllInfluencer);
 
-router.get("/influencers/:id", auth, getInfluencer);
+router.get("/influencers/:id", getInfluencer);
 
 router.post("/influencers", createInfluencer);
 
-router.put("/influencers/:id", auth, updateInfluencer);
+router.put("/influencers/:id", updateInfluencer);
 
-router.delete("/influencers/:id", auth, deleteInfluencer);
+router.delete("/influencers/:id", deleteInfluencer);
 
 router.get("/auth/youtube", youtubeAuth);
 router.post("/auth/youtube/login", youtubeSilentLogin);

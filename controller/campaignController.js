@@ -414,6 +414,61 @@ const getCampaign = async (req, res, next) => {
   }
 };
 
+// restaurant owner invites an influencer
+let inviteInfluencer = async (req, res) => {
+  try {
+    const { campaign_id, influencer_id, message, restaurant_owner_id } =
+      req.body;
+
+    const owner = await RestaurantOwner.findOne({
+      where: { id: restaurant_owner_id },
+    });
+
+    if (!owner) {
+      return res
+        .status(404)
+        .json(resjson("", "Restaurant owner not found", "", 1));
+    }
+
+    // verify ownership
+    const campaign = await Campaign.findOne({
+      where: { id: campaign_id, restaurant_owner_id },
+    });
+    if (!campaign) {
+      return res
+        .status(403)
+        .json(
+          resjson("", "You are not allowed to invite for this campaign", "", 1)
+        );
+    }
+
+    // prevent duplicate invite
+    const existing = await CampaignParticipation.findOne({
+      where: { campaign_id, influencer_id, type: "invite" },
+    });
+    if (existing) {
+      return res
+        .status(409)
+        .json(resjson("", "Influencer already invited", "", 1));
+    }
+
+    const participation = await CampaignParticipation.create({
+      campaign_id,
+      influencer_id,
+      type: "invite",
+      message,
+      status: "pending",
+    });
+
+    return res.json(
+      resjson(participation, "Influencer invited successfully", "", 0)
+    );
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(resjson("", "Internal Server Error", "", 1));
+  }
+};
+
 let createCampaign = async (req, res) => {
   let transaction;
   try {
@@ -514,61 +569,6 @@ let applyForCampaign = async (req, res) => {
     });
 
     return res.json(resjson(participation, "Application submitted", "", 0));
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json(resjson("", "Internal Server Error", "", 1));
-  }
-};
-
-// restaurant owner invites an influencer
-let inviteInfluencer = async (req, res) => {
-  try {
-    const { campaign_id, influencer_id, message, restaurant_owner_id } =
-      req.body;
-
-    const owner = await RestaurantOwner.findOne({
-      where: { id: restaurant_owner_id },
-    });
-
-    if (!owner) {
-      return res
-        .status(404)
-        .json(resjson("", "Restaurant owner not found", "", 1));
-    }
-
-    // verify ownership
-    const campaign = await Campaign.findOne({
-      where: { id: campaign_id, restaurant_owner_id },
-    });
-    if (!campaign) {
-      return res
-        .status(403)
-        .json(
-          resjson("", "You are not allowed to invite for this campaign", "", 1)
-        );
-    }
-
-    // prevent duplicate invite
-    const existing = await CampaignParticipation.findOne({
-      where: { campaign_id, influencer_id, type: "invite" },
-    });
-    if (existing) {
-      return res
-        .status(409)
-        .json(resjson("", "Influencer already invited", "", 1));
-    }
-
-    const participation = await CampaignParticipation.create({
-      campaign_id,
-      influencer_id,
-      type: "invite",
-      message,
-      status: "pending",
-    });
-
-    return res.json(
-      resjson(participation, "Influencer invited successfully", "", 0)
-    );
   } catch (err) {
     console.error(err);
     return res.status(500).json(resjson("", "Internal Server Error", "", 1));
