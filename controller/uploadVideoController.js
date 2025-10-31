@@ -203,6 +203,16 @@ let createUploadVideo = async (req, res) => {
   }
 };
 
+/* 
+Review video and verify	
+The Restaurant owner will review the content and give approval to post it on social media.
+JSON 
+{
+  "approval_status": "approved",
+  "approval_comment": "Video is amazing man",
+  "approved_restaurant_owner_id": 8
+}
+*/
 // update UploadVideo
 let updateUploadVideo = async (req, res) => {
   const { id } = req.params;

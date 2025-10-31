@@ -43,6 +43,19 @@ module.exports = db.sequelize.define(
     is_own: {
       type: Sequelize.TINYINT,
     },
+    // Approval fields
+    approval_status: {
+      type: Sequelize.ENUM("pending", "approved", "rejected"),
+      // defaultValue: "pending",
+    },
+    approval_comment: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    }, // e.g. "Change caption", "Looks good"
+    approved_restaurant_owner_id: {
+      type: Sequelize.BIGINT,
+      allowNull: true,
+    }, // "ID of the restaurant owner who approved or rejected the content"
   },
   {
     timestamps: 1,
