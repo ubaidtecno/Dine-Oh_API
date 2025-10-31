@@ -42,6 +42,7 @@ let getAllCampaign = async (req, res) => {
           {
             model: Influencer,
             required: false,
+            where: filter.inInfluencer,
             attributes: {
               exclude: [
                 "password",
@@ -119,6 +120,14 @@ let getAllCampaign = async (req, res) => {
           ],
         };
         break;
+      case "category":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { category: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
       case "payment_type":
         obj.where = {
           [Op.and]: [
@@ -163,6 +172,7 @@ let getAllCampaign = async (req, res) => {
             { title: { [Op.like]: `%${searchString}%` } },
             { cuisine: { [Op.like]: `%${searchString}%` } },
             { location: { [Op.like]: `%${searchString}%` } },
+            { category: { [Op.like]: `%${searchString}%` } },
             { payment_type: { [Op.like]: `%${searchString}%` } },
             { min_followers: { [Op.like]: `%${searchString}%` } },
             { max_followers: { [Op.like]: `%${searchString}%` } },

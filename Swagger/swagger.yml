@@ -5311,7 +5311,13 @@ components:
                 type: string
                 description: The filename of the image.
                 example: "cons3.mp4"
-        
+        approval_status:        
+          type: string
+          example: "pending || approved || rejected"
+        approval_comment:        
+          type: string
+        approved_restaurant_owner_id:        
+          type: number
     Users:
       type: object
       properties:
