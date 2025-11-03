@@ -23,6 +23,7 @@ const roles = require("./rolesRoutes");
 const uploadVideos = require("./uploadVideoRoutes");
 const campaign = require("./campaignRoutes");
 const campaignChat = require("./campaignChatRoutes");
+const influencerGroup = require("./influencerGroupRoutes");
 
 // Use Routes
 router.use(
@@ -49,7 +50,8 @@ router.use(
   roles,
   uploadVideos,
   campaign,
-  campaignChat
+  campaignChat,
+  influencerGroup
 );
 
 module.exports = router;

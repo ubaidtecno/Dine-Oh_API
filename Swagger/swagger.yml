@@ -4620,6 +4620,231 @@ paths:
         - http: []
 
    
+  /influencer_groups:
+    get:
+      tags:
+        - Influencer Group
+      summary: Fetch all Influencer Groups
+      description: Returns all Influencer Groups from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter Influencer Groups
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched Influencer Groups
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InfluencerGroup"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - Influencer Group
+      summary: Creates a new Influencer Group
+      description: Creates a new Influencer Group
+      requestBody:
+        description: The Influencer Group JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InfluencerGroup"
+        required: true
+      responses:
+        "200":
+          description: New Influencer Group added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InfluencerGroup"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /influencer_groups/{id}:
+    get:
+      tags:
+        - Influencer Group
+      summary: Fetch Influencer Group
+      description: Returns a Influencer Group based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of Influencer Group to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched Influencer Group
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InfluencerGroup"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - Influencer Group
+      summary: Update Influencer Group by its id
+      description: Update Influencer Group by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of Influencer Group to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The Influencer Group JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InfluencerGroup"
+        required: true
+      responses:
+        "200":
+          description: Influencer Group updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InfluencerGroup"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - Influencer Group
+      summary: Delete Influencer Group
+      description: Deletes a single Influencer Group based on the ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of Influencer Group to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Influencer Group deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+ 
+  /influencer_group_members:
+    post:
+      tags:
+        - Influencer Group
+      summary: Creates a new Influencer Group Members
+      description: Creates a new Influencer Group Members
+      requestBody:
+        description: The Influencer Group Members JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InfluencerGroupMembers"
+        required: true
+      responses:
+        "200":
+          description: New Influencer Group added Members
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InfluencerGroupMembers"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /influencer_group_members/{id}:
+    delete:
+      tags:
+        - Influencer Group
+      summary: Delete Influencer Group Members
+      description: Deletes a single Influencer Group Members based on the ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of Influencer Group Members to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Influencer Group Members deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+ 
    
 
 # Components
@@ -5318,6 +5543,39 @@ components:
           type: string
         approved_restaurant_owner_id:        
           type: number
+    InfluencerGroup:
+      type: object
+      properties:
+        restaurant_owner_id:
+          type: number
+        name:
+          type: string
+        description:
+          type: string
+        members:
+          type: array
+          description: A list of influencer ids.
+          items:
+            type: object
+            properties:
+              influencer_id:
+                type: number  
+        
+    InfluencerGroupMembers:
+      type: object
+      properties:
+        influencer_group_id:
+          type: number
+        members:
+          type: array
+          description: A list of influencer ids.
+          items:
+            type: object
+            properties:
+              influencer_id:
+                type: number
+                
+              
     Users:
       type: object
       properties:
