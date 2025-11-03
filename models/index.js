@@ -34,6 +34,8 @@ const UploadVideo = require("./UploadVideo");
 const Campaign = require("./campaignTable/Campaign");
 const CampaignParticipation = require("./campaignTable/CampaignParticipation");
 const CampaignChat = require("./campaignTable/CampaignChat");
+const InfluencerGroup = require("./InfluencerGroup");
+const InfluencerGroupMember = require("./InfluencerGroupMember");
 
 Banner.hasOne(Attach, {
   foreignKey: "foreign_id",
@@ -171,6 +173,16 @@ UploadVideo.belongsTo(CampaignParticipation, {
   foreignKey: "campaign_participation_id",
 });
 
+InfluencerGroup.hasMany(InfluencerGroupMember, {
+  foreignKey: "influencer_group_id",
+});
+InfluencerGroupMember.belongsTo(InfluencerGroup, {
+  foreignKey: "influencer_group_id",
+});
+InfluencerGroupMember.belongsTo(Influencer, {
+  foreignKey: "influencer_id",
+});
+
 module.exports = {
   AddOns,
   Attach,
@@ -209,4 +221,6 @@ module.exports = {
   Campaign,
   CampaignParticipation,
   CampaignChat,
+  InfluencerGroup,
+  InfluencerGroupMember,
 };

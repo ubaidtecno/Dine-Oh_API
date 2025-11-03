@@ -58,6 +58,7 @@ let getAllCampaign = async (req, res) => {
           {
             model: UploadVideo,
             required: false,
+            where: filter.inUploadVideo,
             include: [
               {
                 model: Attach,
