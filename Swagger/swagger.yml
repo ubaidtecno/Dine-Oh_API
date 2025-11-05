@@ -2023,7 +2023,7 @@ paths:
   /influencers/signup:
     post:
       tags:
-        - Influencer
+        - Influencer Authentication
       summary: Signup a new influencer
       description: Signup a new influencer
       requestBody:
@@ -2052,7 +2052,7 @@ paths:
   /influencers/login:
     post:
       tags:
-        - Influencer
+        - Influencer Authentication
       summary: Dine Oh Influencer login
       requestBody:
         required: true
@@ -2082,7 +2082,7 @@ paths:
   /influencers/forgot_password:
     post:
       tags:
-        - Influencer
+        - Influencer Authentication
       summary: Influencer Forgot password
       requestBody:
         required: true
@@ -2113,7 +2113,7 @@ paths:
     post:
       summary: Influencer Verify Otp
       tags:
-        - Influencer
+        - Influencer Authentication
       requestBody:
         required: true
         content:
@@ -2144,7 +2144,7 @@ paths:
     post:
       summary: Influencer Reset Password
       tags:
-        - Influencer
+        - Influencer Authentication
       requestBody:
         required: true
         content:
@@ -2177,7 +2177,7 @@ paths:
     post:
       summary: Influencer Set Password
       tags:
-        - Influencer
+        - Influencer Authentication
       requestBody:
         required: true
         content:
@@ -2375,8 +2375,8 @@ paths:
   /auth/youtube:
     get:
       tags:
-        - Influencer
-      summary: YouTube Signup 
+        - Influencer YouTube
+      summary: Influencer YouTube Signup 
       description: Signup a new user in YouTube Authentication
       
       responses:
@@ -2398,8 +2398,8 @@ paths:
   /auth/youtube/login:
     post:
       tags:
-        - Influencer
-      summary: Dino Oh YouTube login
+        - Influencer YouTube
+      summary: Dino Oh Influencer YouTube login
       requestBody:
         required: true
         content:
@@ -2427,8 +2427,8 @@ paths:
   /auth/instagram:
     get:
       tags:
-        - Influencer
-      summary: Instagram Signup 
+        - Influencer Instagram
+      summary: Influencer Instagram Signup 
       description: Signup a new user in Instagram Authentication
       
       responses:
@@ -2450,8 +2450,8 @@ paths:
   /auth/instagram/login:
     post:
       tags:
-        - Influencer
-      summary: Dino Oh Instagram login
+        - Influencer Instagram
+      summary: Influencer Instagram login
       requestBody:
         required: true
         content:
