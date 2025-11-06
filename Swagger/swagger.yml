@@ -3564,7 +3564,175 @@ paths:
       security:
         - http: []
 
-    # Review Module
+  # RestaurantTable Module
+  /restaurant_tables:
+    get:
+      tags:
+        - RestaurantTable
+      summary: Fetch all restaurant tables
+      description: Returns all restaurant tables from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter restaurant tables
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and date
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and date
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched restaurant tables
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantTable"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - RestaurantTable
+      summary: Creates a new restaurant table
+      description: Creates a new restaurant table
+      requestBody:
+        description: The restaurant table JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestaurantTable"
+        required: true
+      responses:
+        "200":
+          description: New restaurant table added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantTable"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /restaurant_tables/{id}:
+    get:
+      tags:
+        - RestaurantTable
+      summary: Fetch restaurant table
+      description: Returns a restaurant table based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of restaurant table to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched restaurant table
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantTable"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - RestaurantTable
+      summary: Update restaurant table by its id
+      description: Update restaurant table by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of restaurant table to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The restaurant table JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestaurantTable"
+        required: true
+      responses:
+        "200":
+          description: Restaurant Table updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantTable"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - RestaurantTable
+      summary: Delete restaurant table
+      description: Deletes a single restaurant table based on the ID supplied
+      parameters:
+        - name: id
+          in: path
+          description: ID of restaurant table to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: restaurant table deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
 
   # Reviews
   /reviews:
@@ -3975,6 +4143,176 @@ paths:
       responses:
         "200":
           description: Role deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
+  # TableSlot Module
+  /table_slots:
+    get:
+      tags:
+        - TableSlot
+      summary: Fetch all table slots
+      description: Returns all table slots from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter table slots
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id and date
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id and date
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched table slots
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TableSlot"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - TableSlot
+      summary: Creates a new table slot
+      description: Creates a new table slot
+      requestBody:
+        description: The table slot JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TableSlot"
+        required: true
+      responses:
+        "200":
+          description: New table slot added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TableSlot"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /table_slots/{id}:
+    get:
+      tags:
+        - TableSlot
+      summary: Fetch table slot
+      description: Returns a table slot based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of table slot to fetch
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: Fetched table slot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TableSlot"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - TableSlot
+      summary: Update table slot by its id
+      description: Update table slot by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of table slot to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The table slot JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TableSlot"
+        required: true
+      responses:
+        "200":
+          description: Table Slot updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TableSlot"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - TableSlot
+      summary: Delete table slot
+      description: Deletes a single table slot based on the ID supplied
+      parameters:
+        - name: id
+          in: path
+          description: ID of table slot to delete
+          required: true
+          schema:
+            type: number
+            format: number
+      responses:
+        "200":
+          description: table slot deleted
           content: {}
         default:
           description: Unexpected error
@@ -4448,7 +4786,7 @@ paths:
       security:
         - http: []
 
-  
+
   # Upload Video Module for all models
   /upload_videos:
     get:
@@ -5359,6 +5697,24 @@ components:
         is_verified:
           type: boolean
           default: false
+    RestaurantTable:
+      type: object
+      properties:
+        restaurant_id:
+          type: number
+        slot_id:
+          type: number
+        table_name:
+          type: string
+        capacity:
+          type: number
+        status:
+          type: string
+        location_area:
+          type: string
+        is_active:
+          type: boolean
+          default: true
     RestaurantSignUp:
       type: object
       properties:
@@ -5484,6 +5840,22 @@ components:
         name:
           type: string
         is_active:
+          type: boolean
+          default: true
+    TableSlot:
+      type: object
+      properties:
+        restaurant_id:
+          type: number
+        slot_name:
+          type: string
+        start_time:
+          type: string
+        end_time:
+          type: string
+        availability:
+          type: string
+        is_available:
           type: boolean
           default: true
     CampaignChat:

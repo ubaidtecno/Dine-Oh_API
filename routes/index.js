@@ -18,8 +18,10 @@ const ItemType = require("./masterTable.js/itemTypeRoutes");
 const menu = require("./masterTable.js/menuRoutes");
 const restaurant = require("./restaurantRoutes");
 const restaurantOwner = require("./restaurant_ownerRoutes");
+const restaurantTable = require("./restaurantTableRoutes");
 const review = require("./reviewRoutes");
 const roles = require("./rolesRoutes");
+const tableSlot = require("./tableSlotRoutes");
 const uploadVideos = require("./uploadVideoRoutes");
 const campaign = require("./campaignRoutes");
 const campaignChat = require("./campaignChatRoutes");
@@ -46,7 +48,9 @@ router.use(
   banner,
   influencer,
   restaurantOwner,
+  restaurantTable,
   review,
+  tableSlot,
   group,
   roles,
   uploadVideos,
