@@ -5849,15 +5849,28 @@ components:
           type: number
         slot_name:
           type: string
-        start_time:
-          type: string
-        end_time:
+        slot_timing:
           type: string
         availability:
           type: string
         is_available:
           type: boolean
           default: true
+        table_timings:
+          type: array
+          description: A list of timing ids.
+          items:
+            type: object
+            properties:
+              start_time:
+                type: string
+              end_time:
+                type: string
+              availability:
+                type: string
+              is_available:
+                type: boolean
+                default: true
     CampaignChat:
       type: object
       properties:

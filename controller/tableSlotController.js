@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
 // Load models
-const { Restaurant, TableSlot } = require("../models");
+const { Restaurant, TableSlot, TableTiming } = require("../models");
 const resjson = require("../core/resjson");
 const { sequelize } = require("../config/db");
 const _ = require("lodash");
@@ -24,10 +24,16 @@ let getAllTableSlot = async (req, res) => {
 
   let obj = {
     where: filter.where,
-    include: {
-      model: Restaurant,
-      required: false,
-    },
+    include: [
+      {
+        model: TableTiming,
+        required: false,
+      },
+      {
+        model: Restaurant,
+        required: false,
+      },
+    ],
     order: [[`${sortField}`, `${sortOrder}`]],
     limit,
     offset,
@@ -94,16 +100,20 @@ const getTableSlot = async (req, res) => {
     const { id } = req.params;
     const tableSlot = await TableSlot.findOne({
       where: { id },
-      include: {
-        model: Restaurant,
-        required: false,
-      },
+      include: [
+        {
+          model: TableTiming,
+          required: false,
+        },
+        {
+          model: Restaurant,
+          required: false,
+        },
+      ],
     });
 
     if (!tableSlot) {
-      return res
-        .status(404)
-        .json(resjson("", "Table Slot not found", "", 1));
+      return res.status(404).json(resjson("", "Table Slot not found", "", 1));
     }
 
     return res.json(resjson(tableSlot, "", "", 0));
@@ -120,11 +130,18 @@ let createTableSlot = async (req, res) => {
 
     const newTableSlot = await TableSlot.create(req.body);
 
+    if (req.body.table_timings && req.body.table_timings.length > 0) {
+      for (const timings of req.body.table_timings) {
+        await TableTiming.create(
+          { slot_id: newTableSlot.id, ...timings },
+          { transaction }
+        );
+      }
+    }
+
     await transaction.commit();
 
-    return res.json(
-      resjson(newTableSlot, "Table Slot was created", "")
-    );
+    return res.json(resjson(newTableSlot, "Table Slot was created", ""));
   } catch (err) {
     console.error(err);
     return res.status(500).json(resjson("", "Internal Server Error", "", 1));
@@ -133,28 +150,49 @@ let createTableSlot = async (req, res) => {
 
 let updateTableSlot = async (req, res) => {
   const { id } = req.params;
+  const t = await sequelize.transaction();
   try {
-    const [result] = await TableSlot.update(req.body, {
+    const tableSlot = await TableSlot.findByPk(id);
+    if (!tableSlot) {
+      await t.rollback();
+      return res.status(404).json(resjson("", "Table Slot not found", "", 1));
+    }
+
+    await TableSlot.update(req.body, {
       where: { id },
     });
 
-    if (result > 0) {
-      const tableSlot = await TableSlot.findOne({
-        where: { id },
-        include: {
+    if (Array.isArray(req.body.table_timings)) {
+      // Delete existing timings for this slot
+      await TableTiming.destroy({
+        where: { slot_id: id },
+        transaction: t,
+      });
+
+      // Insert new ones
+      const newTimings = req.body.table_timings.map((timing) => ({
+        slot_id: id,
+        ...timing,
+      }));
+
+      await TableTiming.bulkCreate(newTimings, { transaction: t });
+    }
+
+    const updatedSlot = await TableSlot.findOne({
+      where: { id },
+      include: [
+        {
+          model: TableTiming,
+          required: false,
+        },
+        {
           model: Restaurant,
           required: false,
         },
-      });
+      ],
+    });
 
-      return res.json(
-        resjson(tableSlot, "Table Slot was updated", "")
-      );
-    } else {
-      return res
-        .status(404)
-        .json(resjson("", "Table Slot not found", "", 1));
-    }
+    return res.json(resjson(updatedSlot, "Table Slot was updated", ""));
   } catch (err) {
     console.error(err);
     return res.status(500).json(resjson("", "Internal Server Error", "", 1));
@@ -168,10 +206,12 @@ let deleteTableSlot = async (req, res) => {
     const tableSlot = await TableSlot.findByPk(id);
 
     if (!tableSlot) {
-      return res
-        .status(404)
-        .json(resjson("", "Table Slot not found", "", 1));
+      return res.status(404).json(resjson("", "Table Slot not found", "", 1));
     }
+
+    await TableTiming.destroy({
+      where: { slot_id: id },
+    });
 
     const resp = await TableSlot.destroy({ where: { id } });
 

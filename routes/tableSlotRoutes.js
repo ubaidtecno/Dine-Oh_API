@@ -13,7 +13,7 @@ const { auth } = require("../middleware/auth");
 
 router.get("/table_slots", auth, getAllTableSlot);
 
-router.get("/table_slots/:id", auth, getTableSlot);
+router.get("/table_slots/:id", getTableSlot);
 
 router.post("/table_slots", createTableSlot);
 

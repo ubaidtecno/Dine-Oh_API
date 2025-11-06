@@ -2,20 +2,23 @@ const Sequelize = require("sequelize");
 const db = require("../config/db");
 
 module.exports = db.sequelize.define(
-  "table_slot",
+  "table_timing",
   {
     id: {
       type: Sequelize.BIGINT,
       primaryKey: true,
       autoIncrement: true,
     },
-    restaurant_id: {
+    slot_id: {
       type: Sequelize.BIGINT,
     },
-    slot_name: {
+    start_time: {
       type: Sequelize.STRING,
     },
-    slot_timing: {
+    end_time: {
+      type: Sequelize.STRING,
+    },
+    availability: {
       type: Sequelize.STRING,
     },
     is_available: {

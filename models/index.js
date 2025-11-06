@@ -28,6 +28,7 @@ const RestaurantTable = require("./RestaurantTable");
 const Review = require("./Review");
 // const Size = require("./masterTable/Size");
 const TableSlot = require("./TableSlot");
+const TableTiming = require("./TableTiming");
 const WorkingDays = require("./WorkingDays");
 const Group = require("./Group");
 const GroupMember = require("./GroupMember");
@@ -118,6 +119,7 @@ Restaurant.hasMany(WorkingDays, {
 });
 RestaurantTable.belongsTo(Restaurant, { foreignKey: "restaurant_id" });
 TableSlot.belongsTo(Restaurant, { foreignKey: "restaurant_id" });
+TableSlot.hasMany(TableTiming, { foreignKey: "slot_id" });
 Review.belongsTo(User, { foreignKey: "user_id", constraints: false });
 Review.belongsTo(Restaurant, { foreignKey: "foreign_id", constraints: false });
 Review.hasMany(Attach, {
@@ -218,6 +220,7 @@ module.exports = {
   Review,
   // Size,
   TableSlot,
+  TableTiming,
   User,
   UploadVideo,
   WorkingDays,
