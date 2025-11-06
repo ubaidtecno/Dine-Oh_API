@@ -539,6 +539,30 @@ let getAllInfluencer = async (req, res) => {
           ],
         };
         break;
+      case "location":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { location: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
+      case "category":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { category: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
+      case "gender":
+        obj.where = {
+          [Op.and]: [
+            filter.where,
+            { gender: { [Op.like]: `%${searchString}%` } },
+          ],
+        };
+        break;
     }
   } else if (
     searchString !== "" &&
@@ -552,6 +576,9 @@ let getAllInfluencer = async (req, res) => {
           [Op.or]: [
             { id: { [Op.like]: `%${searchString}%` } },
             { name: { [Op.like]: `%${searchString}%` } },
+            { location: { [Op.like]: `%${searchString}%` } },
+            { category: { [Op.like]: `%${searchString}%` } },
+            { gender: { [Op.like]: `%${searchString}%` } },
           ],
         },
       ],
