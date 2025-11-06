@@ -39,6 +39,7 @@ const CampaignParticipation = require("./campaignTable/CampaignParticipation");
 const CampaignChat = require("./campaignTable/CampaignChat");
 const InfluencerGroup = require("./InfluencerGroup");
 const InfluencerGroupMember = require("./InfluencerGroupMember");
+const TableBooking = require("./TableBooking");
 
 Banner.hasOne(Attach, {
   foreignKey: "foreign_id",
@@ -232,4 +233,5 @@ module.exports = {
   CampaignChat,
   InfluencerGroup,
   InfluencerGroupMember,
+  TableBooking,
 };

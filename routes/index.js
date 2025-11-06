@@ -26,6 +26,7 @@ const uploadVideos = require("./uploadVideoRoutes");
 const campaign = require("./campaignRoutes");
 const campaignChat = require("./campaignChatRoutes");
 const influencerGroup = require("./influencerGroupRoutes");
+const tableBooking = require("./tableBookingRoutes");
 
 // Use Routes
 router.use(
@@ -56,7 +57,8 @@ router.use(
   uploadVideos,
   campaign,
   campaignChat,
-  influencerGroup
+  influencerGroup,
+  tableBooking
 );
 
 module.exports = router;

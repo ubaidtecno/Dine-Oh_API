@@ -2514,11 +2514,11 @@ paths:
         200:
           description: Fetched items
           schema:
-            $ref: "#/definitions/Items"
+            $ref: "#/components/schemas/Items"
         default:
           description: Unexpected error
           schema:
-            $ref: "#/definitions/Error"
+            $ref: "#/components/schemas/Error"
       security:
         - http: []
     post:
@@ -5183,7 +5183,178 @@ paths:
       security:
         - http: []
  
-   
+
+  /table_bookings:
+    get:
+      summary: Fetch all Table Bookings
+      description: Returns all Table Bookings from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter Table Booking
+          schema:
+            type: string
+            format: string
+        - name: searchField
+          in: query
+          description: search field of id
+          schema:
+            type: string
+            format: string
+        - name: searchString
+          in: query
+          description: search string of id
+          schema:
+            type: string
+            format: string
+        - name: offset
+          in: query
+          schema:
+            type: number
+            format: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+            format: number
+      tags:
+        - Table Booking
+      responses:
+        200:
+          description: Fetched Table Bookings
+          schema:
+            $ref: "#/components/schemas/TableBookings"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    post:
+      tags:
+        - Table Booking
+      summary: Creates a new Table Booking
+      description: Creates a new Table Booking
+      requestBody:
+        description: The Table Booking JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TableBookings"
+        required: true
+      responses:
+        "200":
+          description: New Table Booking added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TableBookings"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+  /table_bookings/{id}:
+    get:
+      tags:
+        - Table Booking
+      summary: Fetch all Table Bookings
+      description: Returns all Table Bookings from the system
+      parameters:
+        - name: filter
+          in: query
+          description: Filter Table Booking
+          required: false
+          type: string
+          format: string
+        - name: id
+          in: path
+          description: ID of Table Booking to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Fetched Table Booking
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TableBookings"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+    put:
+      tags:
+        - Table Booking
+      summary: Update Table Booking by its id
+      description: Update Table Booking by its id
+      parameters:
+        - name: id
+          in: path
+          description: ID of Table Booking to update
+          required: true
+          schema:
+            type: number
+            format: number
+      requestBody:
+        description: The Table Booking JSON you want to post
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TableBookings"
+        required: true
+      responses:
+        "200":
+          description: Table Booking updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TableBookings"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+        - Table Booking
+      summary: Delete Table Booking
+      description: Deletes a single Table Booking based on the ID supplied
+      parameters:
+        - name: id
+          in: path
+          description: ID of Table Booking to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Table Booking deleted
+          content: {}
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - http: []
+
+
+
 
 # Components
 components:
@@ -5959,6 +6130,37 @@ components:
             properties:
               influencer_id:
                 type: number
+    TableBookings:
+      type: object
+      properties:
+        restaurant_id:
+          type: integer
+          format: int64
+        table_id:
+          type: integer
+          format: int64
+        customer_id:
+          type: integer
+          format: int64
+        booking_date:
+          type: string
+        guest_count:
+          type: integer
+        booking_start_time:
+          type: string
+        booking_end_time:
+          type: string
+        status:
+          type: string
+        special_request:
+          type: string
+        created_by:
+          type: number
+        updated_by:
+          type: number
+        is_active:
+          type: boolean
+          default: true            
                 
               
     Users:
