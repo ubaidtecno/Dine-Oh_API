@@ -190,6 +190,17 @@ InfluencerGroupMember.belongsTo(Influencer, {
   foreignKey: "influencer_id",
 });
 
+TableBooking.belongsTo(Restaurant, { foreignKey: "restaurant_id" });
+TableBooking.belongsTo(RestaurantTable, { foreignKey: "table_id" });
+TableBooking.belongsTo(User, { foreignKey: "customer_id" });
+TableBooking.belongsTo(TableSlot, { foreignKey: "slot_id" });
+
+// Reverse: hasMany relations
+Restaurant.hasMany(TableBooking, { foreignKey: "restaurant_id" });
+RestaurantTable.hasMany(TableBooking, { foreignKey: "table_id" });
+User.hasMany(TableBooking, { foreignKey: "customer_id" });
+TableSlot.hasMany(TableBooking, { foreignKey: "slot_id" });
+
 module.exports = {
   AddOns,
   Attach,
