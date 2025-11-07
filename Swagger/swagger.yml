@@ -6139,6 +6139,9 @@ components:
         table_id:
           type: integer
           format: int64
+        slot_id:
+          type: integer
+          format: int64
         customer_id:
           type: integer
           format: int64
@@ -6150,17 +6153,13 @@ components:
           type: string
         booking_end_time:
           type: string
-        status:
-          type: string
         special_request:
           type: string
         created_by:
           type: number
         updated_by:
           type: number
-        is_active:
-          type: boolean
-          default: true            
+               
                 
               
     Users:
