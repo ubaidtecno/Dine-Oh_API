@@ -6022,8 +6022,6 @@ components:
           type: string
         slot_timing:
           type: string
-        availability:
-          type: string
         is_available:
           type: boolean
           default: true
