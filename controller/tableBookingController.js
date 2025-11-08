@@ -9,8 +9,10 @@ const {
   Restaurant,
   User,
   TableSlot,
+  Deal,
 } = require("../models");
 const resjson = require("../core/resjson");
+const { sendMail } = require("../core/sendEmail");
 
 let getAllTableBookings = async (req, res) => {
   let filter = req.query.filter;
@@ -50,6 +52,10 @@ let getAllTableBookings = async (req, res) => {
       },
       {
         model: User,
+        required: false,
+      },
+      {
+        model: Deal,
         required: false,
       },
     ],
@@ -126,6 +132,10 @@ const getTableBooking = async (req, res) => {
           model: User,
           required: false,
         },
+        {
+          model: Deal,
+          required: false,
+        },
       ],
     });
 
@@ -188,7 +198,7 @@ let createTableBooking = async (req, res) => {
     }
 
     // Step 3: Create booking
-    const newBooking = await TableBooking.create({
+    let newBooking = await TableBooking.create({
       restaurant_id,
       table_id,
       slot_id,
@@ -214,6 +224,37 @@ let createTableBooking = async (req, res) => {
     //     },
     //   }
     // );
+    newBooking = await TableBooking.findByPk(newBooking.id, {
+      include: [
+        {
+          model: Restaurant,
+          required: false,
+        },
+        {
+          model: RestaurantTable,
+          required: false,
+        },
+        {
+          model: TableSlot,
+          required: false,
+        },
+        {
+          model: User,
+          required: false,
+        },
+        {
+          model: Deal,
+          required: false,
+        },
+      ],
+    });
+
+    if (newBooking?.user?.email) {
+      const subject = `Dine Oh - Booking Details`;
+      const message = `Restaurant Admin will check and update the status of the bookings. Once Booking is confirmed you will get the confirmation mail from Restaurant Admin. Please check details in Dine Oh Application`;
+
+      sendMail(newBooking?.user?.email, message, ``, subject);
+    }
 
     return res.json(resjson(newBooking, "Table booked successfully.", ""));
   } catch (err) {
@@ -244,6 +285,21 @@ let updateTableBooking = async (req, res) => {
       return res
         .status(404)
         .json(resjson("", "Table Booking not found.", "", 1));
+    }
+    console.log(
+      "existingBooking ",
+      ["completed", "checked in"].includes(
+        existingBooking.dataValues.status.toLowerCase()
+      )
+    );
+    if (
+      ["completed", "checked in"].includes(
+        existingBooking.dataValues.status.toLowerCase()
+      )
+    ) {
+      return res
+        .status(400)
+        .json(resjson("", "You don't have the permission.", "", 1));
     }
 
     // Step 2: Validate required fields for time/slot update
@@ -293,7 +349,57 @@ let updateTableBooking = async (req, res) => {
     await TableBooking.update(req.body, { where: { id } });
 
     // Step 4: Fetch updated record
-    const updatedBooking = await TableBooking.findOne({ where: { id } });
+    const updatedBooking = await TableBooking.findOne({
+      where: { id },
+      include: [
+        {
+          model: Restaurant,
+          required: false,
+        },
+        {
+          model: RestaurantTable,
+          required: false,
+        },
+        {
+          model: TableSlot,
+          required: false,
+        },
+        {
+          model: User,
+          required: false,
+        },
+        {
+          model: Deal,
+          required: false,
+        },
+      ],
+    });
+    console.log(
+      "updatedBooking ",
+      updatedBooking.dataValues.status.toLowerCase() === "cancelled"
+    );
+
+    if (
+      ["cancelled"].includes(updatedBooking.dataValues.status.toLowerCase())
+    ) {
+      if (updatedBooking?.user?.email) {
+        const subject = `Dine Oh - Booking Cancelled`;
+        const message = `You have been cancelled the booking. Please check details in Dine Oh Application`;
+
+        sendMail(updatedBooking?.user?.email, message, ``, subject);
+      }
+    }
+
+    if (
+      ["confirmed"].includes(updatedBooking.dataValues.status.toLowerCase())
+    ) {
+      if (updatedBooking?.user?.email) {
+        const subject = `Dine Oh - Booking confirmed`;
+        const message = `Your booking has been confirmed. Please check details in Dine Oh Application`;
+
+        sendMail(updatedBooking?.user?.email, message, ``, subject);
+      }
+    }
 
     return res.json(
       resjson(updatedBooking, "Table Booking updated successfully.", "")

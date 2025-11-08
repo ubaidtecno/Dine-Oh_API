@@ -194,6 +194,7 @@ TableBooking.belongsTo(Restaurant, { foreignKey: "restaurant_id" });
 TableBooking.belongsTo(RestaurantTable, { foreignKey: "table_id" });
 TableBooking.belongsTo(User, { foreignKey: "customer_id" });
 TableBooking.belongsTo(TableSlot, { foreignKey: "slot_id" });
+TableBooking.belongsTo(Deal, { foreignKey: "deal_id" });
 
 // Reverse: hasMany relations
 Restaurant.hasMany(TableBooking, { foreignKey: "restaurant_id" });

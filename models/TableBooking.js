@@ -21,6 +21,9 @@ module.exports = db.sequelize.define(
     slot_id: {
       type: Sequelize.BIGINT,
     },
+    deal_id: {
+      type: Sequelize.BIGINT,
+    },
     booking_date: {
       type: Sequelize.STRING,
     },
@@ -34,7 +37,13 @@ module.exports = db.sequelize.define(
       type: Sequelize.INTEGER,
     },
     status: {
-      type: Sequelize.ENUM("pending", "confirmed", "completed", "cancelled"),
+      type: Sequelize.ENUM(
+        "pending",
+        "confirmed",
+        "completed",
+        "cancelled",
+        "checked in"
+      ),
       defaultValue: "pending",
     },
     special_request: {
