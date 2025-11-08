@@ -12,6 +12,10 @@ require("dotenv").config();
 //swagger
 const swaggerDocument = YAML.load("./Swagger/swagger.yml");
 
+//cron
+const userTableBookingAlert = require("./utils/cron");
+userTableBookingAlert();
+
 // Create Express app
 const app = express();
 
