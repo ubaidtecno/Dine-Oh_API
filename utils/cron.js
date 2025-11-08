@@ -18,7 +18,7 @@ const { sendMail } = require("../core/sendEmail");
 // Runs every day at 8:00 AM IST
 function userTableBookingAlert() {
   cron.schedule(
-    "* * * * *",
+    "* 8 * * *",
     async () => {
       const now = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
       console.log(`📅 Running booking reminder job at ${now} IST`);
